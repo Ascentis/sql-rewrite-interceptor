@@ -24,7 +24,7 @@ namespace SqlInterceptorsTest
                     {
                         truncateTable.ExecuteNonQuery();
                     }
-                    catch (SqlException e)
+                    catch (SqlException)
                     {
                         // Ignore exceptions. Table may not exist
                     }
