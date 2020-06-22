@@ -28,7 +28,7 @@ namespace SqlInterceptorsTest
             {
                 dropTable.ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // Ignore exception attempting to drop table if it doesn't exist
             }
