@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using Ascentis.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -10,12 +11,10 @@ namespace SqlInterceptorsTest
     public class SqlRewriteRuleRepositoryTests
     {
         [TestMethod]
-        public void TestCreateRepository()
+        public void TestCreateRepositoryWithConnectionString()
         {
-            var repository =
-                new SqlRewriteRuleDbRepository(
-                    new SqlConnection(Settings.Default.ConnectionString));
-            Assert.IsNotNull(repository);
+            using(var repository = new SqlRewriteRuleDbRepository(Settings.Default.ConnectionString))
+                Assert.IsNotNull(repository);
         }
 
         [TestMethod]
@@ -23,22 +22,71 @@ namespace SqlInterceptorsTest
         {
             var conn = new SqlConnection(Settings.Default.ConnectionString);
             conn.Open();
-            var dropTable = new SqlCommand("DROP TABLE SqlRewriteRegistry", conn);
+            using (var dropTable = new SqlCommand("DROP TABLE SqlRewriteRegistry", conn))
+            {
+                try
+                {
+                    dropTable.ExecuteNonQuery();
+                }
+                catch (Exception)
+                {
+                    // Ignore exception attempting to drop table if it doesn't exist
+                }
+            }
+
+            using (var cmdCheckTable = new SqlCommand("SELECT OBJECT_ID (N'SqlRewriteRegistry', N'U') obj_id", conn))
+            {
+                var tableId = cmdCheckTable.ExecuteScalar();
+                Assert.IsTrue(tableId is DBNull);
+                var repository = new SqlRewriteRuleDbRepository(conn);
+                Assert.IsNotNull(repository);
+                tableId = cmdCheckTable.ExecuteScalar();
+                Assert.IsFalse(tableId is DBNull);
+            }
+        }
+
+        private static void ItemExists(IEnumerable<SqlRewriteRule> items, SqlRewriteRule item)
+        {
+            foreach (var loadedItem in items)
+            {
+                if (loadedItem.Id != item.Id)
+                    continue;
+                Assert.AreEqual(item.Id, loadedItem.Id);
+                Assert.AreEqual(item.DatabaseRegEx, loadedItem.DatabaseRegEx);
+                Assert.AreEqual(item.QueryMatchRegEx, loadedItem.QueryMatchRegEx);
+                Assert.AreEqual(item.QueryReplacementString, loadedItem.QueryReplacementString);
+                Assert.AreEqual(item.RegExOptions, loadedItem.RegExOptions);
+                return;
+            }
+            throw new Exception("Item doesn't exist");
+        }
+
+        [TestMethod]
+        public void TestSaveAndRemoveItem()
+        {
+            var repository = new SqlRewriteRuleDbRepository(new SqlConnection(Settings.Default.ConnectionString));
+            var item = new SqlRewriteRule
+            {
+                Id = 0, // This will cause insertion
+                DatabaseRegEx = ".*",
+                QueryMatchRegEx = "SELECT @@VERSION",
+                QueryReplacementString = "SELECT DBDATE()",
+                RegExOptions = 0
+            };
+            repository.Save(item);
             try
             {
-                dropTable.ExecuteNonQuery();
+                Assert.AreNotEqual(0, item.Id);
+                var items = repository.Load();
+                ItemExists(items, item);
+                repository.Remove(item.Id);
+                items = repository.Load();
+                Assert.ThrowsException<Exception>(() => { ItemExists(items, item); });
             }
-            catch (Exception)
+            finally
             {
-                // Ignore exception attempting to drop table if it doesn't exist
+                repository.Remove(item.Id);
             }
-            var cmdCheckTable = new SqlCommand("SELECT OBJECT_ID (N'SqlRewriteRegistry', N'U') obj_id", conn);
-            var tableId = cmdCheckTable.ExecuteScalar();
-            Assert.IsTrue(tableId is DBNull);
-            var repository = new SqlRewriteRuleDbRepository(conn);
-            Assert.IsNotNull(repository);
-            tableId = cmdCheckTable.ExecuteScalar();
-            Assert.IsFalse(tableId is DBNull);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.SqlClient;
+// ReSharper disable InconsistentNaming
 
 namespace Ascentis.Infrastructure
 {

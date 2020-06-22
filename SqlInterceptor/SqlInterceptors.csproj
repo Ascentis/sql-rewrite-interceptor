@@ -53,23 +53,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Injectors\RegisterSqlCommandInjectors.cs" />
+    <Compile Include="Plumbing\RegisterSqlCommandInjectors.cs" />
     <Compile Include="Injectors\SqlCommandProcessorBase.cs" />
     <Compile Include="Injectors\SqlCommandRegExProcessor.cs" />
     <Compile Include="Injectors\SqlCommandTextStackTraceInjector.cs" />
     <Compile Include="Model\SqlRewriteRule.cs" />
     <Compile Include="Plumbing\SqlCommandCommandTextSetterInterceptor.cs" />
     <Compile Include="Plumbing\SqlCommandConstructorInterceptor.cs" />
+    <Compile Include="Injectors\SqlCommandInterceptor.cs" />
     <Compile Include="Plumbing\SqlCommandSetProcessor.cs" />
     <Compile Include="Plumbing\SqlInterceptorsInit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Repository\ISqlRewriteRuleRepository.cs" />
     <Compile Include="Repository\SqlRewriteRuleDBRepository.cs" />
+    <Compile Include="Repository\SqlRewriteRuleDBRepositoryException.cs" />
+    <Compile Include="Service\SqlRewriteRuleService.cs" />
+    <Compile Include="Service\SqlRewriteRuleServiceException.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Service\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -9,6 +9,7 @@ namespace Ascentis.Infrastructure
         private Regex _queryMatchRegEx;
         private string _queryMatchRegExPattern;
 
+        public int Id { get; set; }
         public RegexOptions RegExOptions { get; set;}
 
         public string QueryReplacementString { get; set; }
@@ -48,7 +49,7 @@ namespace Ascentis.Infrastructure
                     return;
                 }
                 _queryMatchRegExPattern = value;
-                _queryMatchRegEx = BuildRegEx(_databaseRegExPattern);
+                _queryMatchRegEx = BuildRegEx(_queryMatchRegExPattern);
             }
         }
 
@@ -63,7 +64,7 @@ namespace Ascentis.Infrastructure
         {
             if (_queryMatchRegEx == null)
                 return query;
-            return _databaseRegex.Replace(query, QueryReplacementString);
+            return _queryMatchRegEx.Replace(query, QueryReplacementString);
         }
     }
 }
