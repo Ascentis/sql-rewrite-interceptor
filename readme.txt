@@ -1,6 +1,6 @@
 #Sample usage
 
-<pre><code>
+```
 
 using System;
 using System.Data.SqlClient;
@@ -41,5 +41,4 @@ namespace ConsoleApp2
         }
     }
 }
-
-</code></pre>
+```
