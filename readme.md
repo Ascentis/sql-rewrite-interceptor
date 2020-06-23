@@ -1,6 +1,6 @@
 #Sample usage
 
-```
+```C#
 
 using System;
 using System.Data.SqlClient;
