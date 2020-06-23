@@ -15,7 +15,7 @@ namespace SqlInterceptorsTest
         [TestInitialize]
         public void TestInitialize()
         {
-            TestUtils.DropTables();
+            TestUtils.TruncateTables();
         }
 
         [TestMethod]
@@ -152,6 +152,59 @@ namespace SqlInterceptorsTest
                     Thread.Sleep(1000);
                     Assert.IsNotNull(throwException);
                     Assert.IsFalse(service.Enabled);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestApplySettings()
+        {
+            using (var conn = new SqlConnection(Settings.Default.ConnectionString))
+            {
+                var repo = new SqlRewriteDbRepository(conn);
+                var settings = new SqlRewriteSettings()
+                {
+                    MachineRegEx = Settings.Default.MachineNameMatchString,
+                    ProcessNameRegEx = "Program Files",
+                    Enabled = true,
+                    HashInjectionEnabled = false,
+                    RegExInjectionEnabled = false,
+                    StackFrameInjectionEnabled = false
+                };
+                repo.SaveSqlRewriteSettings(settings);
+                using (var service = new SqlRewriteRuleService(repo, true))
+                {
+                    Assert.IsTrue(service.Enabled);
+                    Assert.IsTrue(SqlCommandRegExProcessor.RegExInjectionEnabled);
+                    Assert.IsTrue(SqlCommandTextStackTraceInjector.HashInjectionEnabled);
+                    Assert.IsTrue(SqlCommandTextStackTraceInjector.StackInjectionEnabled);
+                    service.ApplySettingsFromRepository();
+                    Assert.IsTrue(service.Enabled);
+                    Assert.IsFalse(SqlCommandRegExProcessor.RegExInjectionEnabled);
+                    Assert.IsFalse(SqlCommandTextStackTraceInjector.HashInjectionEnabled);
+                    Assert.IsFalse(SqlCommandTextStackTraceInjector.StackInjectionEnabled);
+                    repo.RemoveSqlRewriteSettings(settings.Id);
+                    settings.Enabled = false;
+                    settings.HashInjectionEnabled = true;
+                    settings.RegExInjectionEnabled = true;
+                    settings.StackFrameInjectionEnabled = true;
+                    repo.SaveSqlRewriteSettings(settings);
+                    service.ApplySettingsFromRepository();
+                    Assert.IsFalse(service.Enabled);
+                    Assert.IsTrue(SqlCommandRegExProcessor.RegExInjectionEnabled);
+                    Assert.IsTrue(SqlCommandTextStackTraceInjector.HashInjectionEnabled);
+                    Assert.IsTrue(SqlCommandTextStackTraceInjector.StackInjectionEnabled);
+                    service.RemoveSettings(settings.Id);
+                    var id = service.StoreCurrentSettings(settings.MachineRegEx, settings.ProcessNameRegEx);
+                    Assert.AreNotEqual(settings.Id, id);
+                    service.ApplySettingsFromRepository();
+                    Assert.IsFalse(service.Enabled);
+                    Assert.IsTrue(SqlCommandRegExProcessor.RegExInjectionEnabled);
+                    Assert.IsTrue(SqlCommandTextStackTraceInjector.HashInjectionEnabled);
+                    Assert.IsTrue(SqlCommandTextStackTraceInjector.StackInjectionEnabled);
+                    service.RemoveSettings(id);
+                    // ReSharper disable once AccessToDisposedClosure
+                    Assert.ThrowsException<SqlRewriteRuleDbRepositoryException>(() => { service.RemoveSettings(id); });
                 }
             }
         }

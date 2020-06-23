@@ -13,7 +13,7 @@ namespace SqlInterceptorsTest
         [TestInitialize]
         public void TestInitialize()
         {
-            TestUtils.DropTables();
+            TestUtils.TruncateTables();
         }
 
         [TestMethod]
@@ -91,7 +91,14 @@ namespace SqlInterceptorsTest
             }
             finally
             {
-                repository.RemoveSqlRewriteRule(item.Id);
+                try
+                {
+                    repository.RemoveSqlRewriteRule(item.Id);
+                }
+                catch (Exception)
+                {
+                    // Ignore exceptions trying to remove to cleanup
+                }
             }
         }
 
@@ -135,7 +142,14 @@ namespace SqlInterceptorsTest
             }
             finally
             {
-                repository.RemoveSqlRewriteSettings(settings.Id);
+                try
+                {
+                    repository.RemoveSqlRewriteSettings(settings.Id);
+                }
+                catch (Exception)
+                {
+                    // Ignore exception
+                }
             }
         }
     }

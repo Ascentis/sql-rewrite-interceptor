@@ -5,7 +5,7 @@ namespace SqlInterceptorsTest
 {
  public class TestUtils
     {
-        public static void DropTables()
+        public static void TruncateTables()
         {
             using (var conn = new SqlConnection(Settings.Default.ConnectionString))
             {

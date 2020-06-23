@@ -119,7 +119,8 @@ namespace Ascentis.Infrastructure
                 WHERE ID = @ID", _sqlConnection))
             {
                 deleteSqlRewriteRule.Parameters.AddWithValue("@ID", id);
-                deleteSqlRewriteRule.ExecuteScalar();
+                if(deleteSqlRewriteRule.ExecuteNonQuery() != 1)
+                    throw new SqlRewriteRuleDbRepositoryException("No sql rewrite entry was found to remove");
             }
         }
 
@@ -222,7 +223,8 @@ namespace Ascentis.Infrastructure
                 WHERE ID = @ID", _sqlConnection))
             {
                 deleteSqlRewriteRule.Parameters.AddWithValue("@ID", id);
-                deleteSqlRewriteRule.ExecuteScalar();
+                if (deleteSqlRewriteRule.ExecuteNonQuery() != 1)
+                    throw new SqlRewriteRuleDbRepositoryException("No settings entry was found to remove");
             }
         }
 

@@ -1,6 +1,6 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Threading;
 using Ascentis.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SqlInterceptorsTest.Properties;
@@ -15,21 +15,7 @@ namespace SqlInterceptorsTest
         [TestInitialize]
         public void TestInitialize()
         {
-            using (var conn = new SqlConnection(Settings.Default.ConnectionString))
-            {
-                conn.Open();
-                using (var truncateTable = new SqlCommand("TRUNCATE TABLE SqlRewriteRegistry", conn))
-                {
-                    try
-                    {
-                        truncateTable.ExecuteNonQuery();
-                    }
-                    catch (SqlException)
-                    {
-                        // Ignore exceptions. Table may not exist
-                    }
-                }
-            }
+            TestUtils.TruncateTables();
         }
 
         [TestMethod]
@@ -69,7 +55,9 @@ namespace SqlInterceptorsTest
                                 Assert.IsNotNull(version.Contains("Microsoft"));
                             }
                         }
-                        Assert.AreEqual(intervalFullInjection, stopWatch.Elapsed);
+                        stopWatch.Stop();
+                        Assert.IsTrue(Math.Abs(intervalFullInjection.TotalMilliseconds - stopWatch.Elapsed.TotalMilliseconds) < 3000);
+                        Assert.IsTrue(Math.Abs(intervalFullInjection.TotalMilliseconds - stopWatch.Elapsed.TotalMilliseconds) > 1000);
                     }
                 }
             }

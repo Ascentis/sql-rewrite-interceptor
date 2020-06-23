@@ -33,6 +33,24 @@ namespace Ascentis.Infrastructure
             }
         }
 
+        public void ApplySettingsFromRepository()
+        {
+            lock (this)
+            {
+                var settingsList = _repository.LoadSqlRewriteSettings();
+                foreach (var settings in settingsList)
+                {
+                    if (!settings.MatchMachineName() || !settings.MatchProcessName())
+                        continue;
+                    Enabled = settings.Enabled;
+                    SqlCommandRegExProcessor.RegExInjectionEnabled = settings.RegExInjectionEnabled;
+                    SqlCommandTextStackTraceInjector.HashInjectionEnabled = settings.HashInjectionEnabled;
+                    SqlCommandTextStackTraceInjector.StackInjectionEnabled = settings.StackFrameInjectionEnabled;
+                    break;
+                }
+            }
+        }
+
         private bool _enabled;
         public bool Enabled
         {
@@ -91,6 +109,7 @@ namespace Ascentis.Infrastructure
                     {
                         try
                         {
+                            ApplySettingsFromRepository();
                             RefreshRulesFromRepository();
                         }
                         catch (Exception e)
@@ -124,6 +143,33 @@ namespace Ascentis.Infrastructure
             lock (this)
             {
                 _repository.RemoveSqlRewriteRule(id);
+            }
+        }
+
+        public int StoreCurrentSettings(string machineRegEx, string processRegEx)
+        {
+            var settings = new SqlRewriteSettings
+            {
+                MachineRegEx = machineRegEx,
+                ProcessNameRegEx = processRegEx,
+                Enabled = Enabled,
+                HashInjectionEnabled = SqlCommandTextStackTraceInjector.HashInjectionEnabled,
+                StackFrameInjectionEnabled = SqlCommandTextStackTraceInjector.StackInjectionEnabled,
+                RegExInjectionEnabled = SqlCommandRegExProcessor.RegExInjectionEnabled
+            };
+            lock (this)
+            {
+                _repository.SaveSqlRewriteSettings(settings);
+            }
+
+            return settings.Id;
+        }
+
+        public void RemoveSettings(int id)
+        {
+            lock (this)
+            {
+                _repository.RemoveSqlRewriteSettings(id);
             }
         }
 
