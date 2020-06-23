@@ -55,16 +55,12 @@ namespace Ascentis.Infrastructure
 
         public bool MatchDatabase(string database)
         {
-            if (_databaseRegex == null)
-                return false;
-            return _databaseRegex.IsMatch(database);
+            return _databaseRegex != null && _databaseRegex.IsMatch(database);
         }
 
         public string ProcessQuery(string query)
         {
-            if (_queryMatchRegEx == null)
-                return query;
-            return _queryMatchRegEx.Replace(query, QueryReplacementString);
+            return _queryMatchRegEx == null ? query : _queryMatchRegEx.Replace(query, QueryReplacementString);
         }
     }
 }

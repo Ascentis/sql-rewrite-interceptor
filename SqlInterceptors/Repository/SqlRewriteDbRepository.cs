@@ -187,6 +187,45 @@ namespace Ascentis.Infrastructure
             }
         }
 
+        public IEnumerable<SqlRewriteSettings> LoadSqlRewriteSettings()
+        {
+            var result = new List<SqlRewriteSettings>();
+            using (var loadSqlRewriteSettings = new SqlCommand(@"
+                SELECT ID, MachineRegEx, ProcessNameRegEx, Enabled, HashInjectionEnabled, RegExInjectionEnabled, StackFrameInjectionEnabled
+                FROM SqlRewriteInjectorSettings", _sqlConnection))
+            {
+                using (var resultSet = loadSqlRewriteSettings.ExecuteReader())
+                {
+                    while (resultSet.Read())
+                    {
+                        var item = new SqlRewriteSettings
+                        {
+                            Id = (int)resultSet[0],
+                            MachineRegEx = (string)resultSet[1],
+                            ProcessNameRegEx = (string)resultSet[2],
+                            Enabled = (bool)resultSet[3],
+                            HashInjectionEnabled = (bool)resultSet[4],
+                            RegExInjectionEnabled = (bool)resultSet[5],
+                            StackFrameInjectionEnabled = (bool)resultSet[6]
+                        };
+                        result.Add(item);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public void RemoveSqlRewriteSettings(int id)
+        {
+            using (var deleteSqlRewriteRule = new SqlCommand(@"
+                DELETE FROM SqlRewriteInjectorSettings
+                WHERE ID = @ID", _sqlConnection))
+            {
+                deleteSqlRewriteRule.Parameters.AddWithValue("@ID", id);
+                deleteSqlRewriteRule.ExecuteScalar();
+            }
+        }
+
         public bool IsThreadSafe()
         {
             return _connectionOwned;

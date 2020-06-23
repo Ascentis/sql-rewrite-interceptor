@@ -60,6 +60,8 @@
     <Compile Include="SqlRewritePerformanceImpactTest.cs" />
     <Compile Include="SqlRewriteRuleRepositoryTests.cs" />
     <Compile Include="SqlRewriteRuleServiceTests.cs" />
+    <Compile Include="SqlRewriteSettingsTests.cs" />
+    <Compile Include="TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

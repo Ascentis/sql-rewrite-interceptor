@@ -15,21 +15,7 @@ namespace SqlInterceptorsTest
         [TestInitialize]
         public void TestInitialize()
         {
-            using (var conn = new SqlConnection(Settings.Default.ConnectionString))
-            {
-                conn.Open();
-                using (var truncateTable = new SqlCommand("TRUNCATE TABLE SqlRewriteRegistry", conn))
-                {
-                    try
-                    {
-                        truncateTable.ExecuteNonQuery();
-                    }
-                    catch (SqlException)
-                    {
-                        // Ignore exceptions. Table may not exist
-                    }
-                }
-            }
+            TestUtils.DropTables();
         }
 
         [TestMethod]

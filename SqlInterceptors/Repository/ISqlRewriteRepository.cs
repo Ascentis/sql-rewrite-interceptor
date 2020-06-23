@@ -7,7 +7,9 @@ namespace Ascentis.Infrastructure
         void SaveSqlRewriteRule(SqlRewriteRule rule);
         void RemoveSqlRewriteRule(int id);
         IEnumerable<SqlRewriteRule> LoadSqlRewriteRules();
-        bool IsThreadSafe();
         void SaveSqlRewriteSettings(SqlRewriteSettings settings);
+        IEnumerable<SqlRewriteSettings> LoadSqlRewriteSettings();
+        void RemoveSqlRewriteSettings(int id);
+        bool IsThreadSafe();
     }
 }

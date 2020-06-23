@@ -10,6 +10,12 @@ namespace SqlInterceptorsTest
     [TestClass]
     public class SqlRewriteRepositoryTests
     {
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            TestUtils.DropTables();
+        }
+
         [TestMethod]
         public void TestCreateRepositoryWithConnectionString()
         {
@@ -89,6 +95,24 @@ namespace SqlInterceptorsTest
             }
         }
 
+        private static void SettingsExists(IEnumerable<SqlRewriteSettings> items, SqlRewriteSettings item)
+        {
+            foreach (var loadedItem in items)
+            {
+                if (loadedItem.Id != item.Id)
+                    continue;
+                Assert.AreEqual(item.Id, loadedItem.Id);
+                Assert.AreEqual(item.ProcessNameRegEx, loadedItem.ProcessNameRegEx);
+                Assert.AreEqual(item.MachineRegEx, loadedItem.MachineRegEx);
+                Assert.AreEqual(item.Enabled, loadedItem.Enabled);
+                Assert.AreEqual(item.HashInjectionEnabled, loadedItem.HashInjectionEnabled);
+                Assert.AreEqual(item.RegExInjectionEnabled, loadedItem.RegExInjectionEnabled);
+                Assert.AreEqual(item.StackFrameInjectionEnabled, loadedItem.StackFrameInjectionEnabled);
+                return;
+            }
+            throw new Exception("Settings entry doesn't exist");
+        }
+
         [TestMethod]
         public void TestSaveAndRemoveSettings()
         {
@@ -103,15 +127,15 @@ namespace SqlInterceptorsTest
             try
             {
                 Assert.AreNotEqual(0, settings.Id);
-                /*var items = repository.LoadSqlRewriteRules();
-                ItemExists(items, item);
-                repository.RemoveSqlRewriteRule(item.Id);
-                items = repository.LoadSqlRewriteRules();
-                Assert.ThrowsException<Exception>(() => { ItemExists(items, item); });*/
+                var items = repository.LoadSqlRewriteSettings();
+                SettingsExists(items, settings);
+                repository.RemoveSqlRewriteSettings(settings.Id);
+                items = repository.LoadSqlRewriteSettings();
+                Assert.ThrowsException<Exception>(() => { SettingsExists(items, settings); });
             }
             finally
             {
-                //repository.RemoveSqlRewriteRule(item.Id);
+                repository.RemoveSqlRewriteSettings(settings.Id);
             }
         }
     }
