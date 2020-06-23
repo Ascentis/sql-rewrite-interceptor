@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\SqlRewriteSettings.cs" />
     <Compile Include="Plumbing\RegisterSqlCommandInjectors.cs" />
     <Compile Include="Injectors\SqlCommandProcessorBase.cs" />
     <Compile Include="Injectors\SqlCommandRegExProcessor.cs" />
@@ -69,8 +70,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Repository\ISqlRewriteRuleRepository.cs" />
-    <Compile Include="Repository\SqlRewriteRuleDBRepository.cs" />
+    <Compile Include="Repository\ISqlRewriteRepository.cs" />
+    <Compile Include="Repository\SqlRewriteDbRepository.cs" />
     <Compile Include="Repository\SqlRewriteRuleDBRepositoryException.cs" />
     <Compile Include="Service\SqlRewriteRuleService.cs" />
     <Compile Include="Service\SqlRewriteRuleServiceException.cs" />

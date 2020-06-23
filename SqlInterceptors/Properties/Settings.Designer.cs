@@ -40,5 +40,14 @@ namespace SqlInterceptor.Properties {
                 return ((bool)(this["RegExInjectionEnabled"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool StackFrameInjectionEnabled {
+            get {
+                return ((bool)(this["StackFrameInjectionEnabled"]));
+            }
+        }
     }
 }

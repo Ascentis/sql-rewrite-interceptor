@@ -37,7 +37,7 @@ namespace SqlInterceptorsTest
         {
             using (var conn = new SqlConnection(Settings.Default.ConnectionString))
             {
-                using (var service = new SqlRewriteRuleService(new SqlRewriteRuleDbRepository(conn)))
+                using (var service = new SqlRewriteRuleService(new SqlRewriteDbRepository(conn)))
                 {
                     Assert.IsNotNull(service);
                 }
@@ -49,12 +49,12 @@ namespace SqlInterceptorsTest
         {
             using (var conn = new SqlConnection(Settings.Default.ConnectionString))
             {
-                var repo = new SqlRewriteRuleDbRepository(conn);
+                var repo = new SqlRewriteDbRepository(conn);
                 var rule = new SqlRewriteRule
                 {
                     DatabaseRegEx = ".*", QueryMatchRegEx = Stm, QueryReplacementString = "SELECT GETDATE()"
                 };
-                repo.Save(rule);
+                repo.SaveSqlRewriteRule(rule);
                 using (var service = new SqlRewriteRuleService(repo, true))
                 {
                     using (var con = new SqlConnection(Settings.Default.ConnectionString))
@@ -84,7 +84,7 @@ namespace SqlInterceptorsTest
         [TestMethod]
         public void TestBasicSqlRewriteRuleServiceWithAutoRefreshTimer()
         {
-            using (var repo = new SqlRewriteRuleDbRepository(Settings.Default.ConnectionString))
+            using (var repo = new SqlRewriteDbRepository(Settings.Default.ConnectionString))
             {
                 using (var service = new SqlRewriteRuleService(repo, true))
                 {
@@ -120,7 +120,7 @@ namespace SqlInterceptorsTest
         [TestMethod]
         public void TestBasicSqlRewriteRuleServiceWithAutoRefreshTimerCausingExceptionByDroppingTable()
         {
-            using (var repo = new SqlRewriteRuleDbRepository(Settings.Default.ConnectionString))
+            using (var repo = new SqlRewriteDbRepository(Settings.Default.ConnectionString))
             {
                 using (var service = new SqlRewriteRuleService(repo, true))
                 {
@@ -146,7 +146,7 @@ namespace SqlInterceptorsTest
         [TestMethod]
         public void TestBasicSqlRewriteRuleServiceWithAutoRefreshTimerCausingExceptionByInsertingBadRegEx()
         {
-            using (var repo = new SqlRewriteRuleDbRepository(Settings.Default.ConnectionString))
+            using (var repo = new SqlRewriteDbRepository(Settings.Default.ConnectionString))
             {
                 using (var service = new SqlRewriteRuleService(repo, true))
                 {

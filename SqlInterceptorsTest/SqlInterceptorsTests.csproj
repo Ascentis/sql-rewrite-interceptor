@@ -57,6 +57,7 @@
     </Compile>
     <Compile Include="SqlInterceptorsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlRewritePerformanceImpactTest.cs" />
     <Compile Include="SqlRewriteRuleRepositoryTests.cs" />
     <Compile Include="SqlRewriteRuleServiceTests.cs" />
   </ItemGroup>

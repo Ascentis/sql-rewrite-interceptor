@@ -8,12 +8,12 @@ using SqlInterceptorsTest.Properties;
 namespace SqlInterceptorsTest
 {
     [TestClass]
-    public class SqlRewriteRuleRepositoryTests
+    public class SqlRewriteRepositoryTests
     {
         [TestMethod]
         public void TestCreateRepositoryWithConnectionString()
         {
-            using(var repository = new SqlRewriteRuleDbRepository(Settings.Default.ConnectionString))
+            using(var repository = new SqlRewriteDbRepository(Settings.Default.ConnectionString))
                 Assert.IsNotNull(repository);
         }
 
@@ -38,7 +38,7 @@ namespace SqlInterceptorsTest
             {
                 var tableId = cmdCheckTable.ExecuteScalar();
                 Assert.IsTrue(tableId is DBNull);
-                var repository = new SqlRewriteRuleDbRepository(conn);
+                var repository = new SqlRewriteDbRepository(conn);
                 Assert.IsNotNull(repository);
                 tableId = cmdCheckTable.ExecuteScalar();
                 Assert.IsFalse(tableId is DBNull);
@@ -64,7 +64,7 @@ namespace SqlInterceptorsTest
         [TestMethod]
         public void TestSaveAndRemoveItem()
         {
-            var repository = new SqlRewriteRuleDbRepository(new SqlConnection(Settings.Default.ConnectionString));
+            var repository = new SqlRewriteDbRepository(new SqlConnection(Settings.Default.ConnectionString));
             var item = new SqlRewriteRule
             {
                 Id = 0, // This will cause insertion
@@ -73,19 +73,45 @@ namespace SqlInterceptorsTest
                 QueryReplacementString = "SELECT DBDATE()",
                 RegExOptions = 0
             };
-            repository.Save(item);
+            repository.SaveSqlRewriteRule(item);
             try
             {
                 Assert.AreNotEqual(0, item.Id);
-                var items = repository.Load();
+                var items = repository.LoadSqlRewriteRules();
                 ItemExists(items, item);
-                repository.Remove(item.Id);
-                items = repository.Load();
+                repository.RemoveSqlRewriteRule(item.Id);
+                items = repository.LoadSqlRewriteRules();
                 Assert.ThrowsException<Exception>(() => { ItemExists(items, item); });
             }
             finally
             {
-                repository.Remove(item.Id);
+                repository.RemoveSqlRewriteRule(item.Id);
+            }
+        }
+
+        [TestMethod]
+        public void TestSaveAndRemoveSettings()
+        {
+            var repository = new SqlRewriteDbRepository(new SqlConnection(Settings.Default.ConnectionString));
+            var settings = new SqlRewriteSettings
+            {
+                Id = 0, // This will cause insertion
+                ProcessNameRegEx = ".*",
+                MachineRegEx = ".*"
+            };
+            repository.SaveSqlRewriteSettings(settings);
+            try
+            {
+                Assert.AreNotEqual(0, settings.Id);
+                /*var items = repository.LoadSqlRewriteRules();
+                ItemExists(items, item);
+                repository.RemoveSqlRewriteRule(item.Id);
+                items = repository.LoadSqlRewriteRules();
+                Assert.ThrowsException<Exception>(() => { ItemExists(items, item); });*/
+            }
+            finally
+            {
+                //repository.RemoveSqlRewriteRule(item.Id);
             }
         }
     }

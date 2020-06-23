@@ -7,12 +7,12 @@ namespace Ascentis.Infrastructure
     public class SqlRewriteRuleService : IDisposable
     {
         private static bool _interceptorInited;
-        private readonly ISqlRewriteRuleRepository _repository;
+        private readonly ISqlRewriteRepository _repository;
 
         public delegate void ExceptionDelegate(Exception e);
         public ExceptionDelegate ExceptionDelegateEvent;
 
-        public SqlRewriteRuleService(ISqlRewriteRuleRepository repository, bool enabled = false)
+        public SqlRewriteRuleService(ISqlRewriteRepository repository, bool enabled = false)
         {
             _repository = repository;
             Enabled = enabled;
@@ -28,7 +28,7 @@ namespace Ascentis.Infrastructure
         {
             lock (this)
             {
-                var items = _repository.Load();
+                var items = _repository.LoadSqlRewriteRules();
                 SqlCommandRegExProcessor.SqlRewriteRules = items;
             }
         }
@@ -114,7 +114,7 @@ namespace Ascentis.Infrastructure
                     QueryReplacementString = queryReplacementString,
                     RegExOptions = regExOptions
                 };
-                _repository.Save(rule);
+                _repository.SaveSqlRewriteRule(rule);
                 return rule.Id;
             }
         }
@@ -123,7 +123,7 @@ namespace Ascentis.Infrastructure
         {
             lock (this)
             {
-                _repository.Remove(id);
+                _repository.RemoveSqlRewriteRule(id);
             }
         }
 

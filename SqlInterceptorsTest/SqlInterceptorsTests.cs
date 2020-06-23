@@ -49,7 +49,7 @@ namespace SqlInterceptorsTest
                 {
                     // ReSharper disable once UnusedVariable
                     var version = cmd.ExecuteScalar().ToString();
-                    Assert.IsTrue(cmd.CommandText.Contains("AHSH=3316229661 MTDNM="));
+                    Assert.IsTrue(cmd.CommandText.Contains("/*AHSH=3316229661*/"));
                 }
             }
         }
