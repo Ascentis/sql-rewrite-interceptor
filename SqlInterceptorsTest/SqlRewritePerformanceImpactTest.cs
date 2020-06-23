@@ -56,7 +56,7 @@ namespace SqlInterceptorsTest
                             }
                         }
                         stopWatch.Stop();
-                        Assert.IsTrue(Math.Abs(intervalFullInjection.TotalMilliseconds - stopWatch.Elapsed.TotalMilliseconds) < 3000);
+                        Assert.IsTrue(Math.Abs(intervalFullInjection.TotalMilliseconds - stopWatch.Elapsed.TotalMilliseconds) < 3500);
                         Assert.IsTrue(Math.Abs(intervalFullInjection.TotalMilliseconds - stopWatch.Elapsed.TotalMilliseconds) > 1000);
                     }
                 }

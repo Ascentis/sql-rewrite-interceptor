@@ -6,13 +6,13 @@ using SqlInterceptor.Properties;
 
 namespace Ascentis.Infrastructure
 {
-    public class SqlCommandTextStackTraceInjector : SqlCommandProcessorBase
+    public class SqlCommandTextStackTraceInjector
     {
         public static bool HashInjectionEnabled = Settings.Default.HashInjectionEnabled;
         public static bool StackInjectionEnabled = Settings.Default.StackFrameInjectionEnabled;
         public static string InjectStackTrace(DbConnection dbConnection, string sqlCommand)
         {
-            if (!Enabled || sqlCommand.Contains("/*AHSH=") || sqlCommand.Contains("/*MTDNM="))
+            if (!SqlCommandProcessor.Enabled || sqlCommand.Contains("/*AHSH=") || sqlCommand.Contains("/*MTDNM="))
                 return sqlCommand;
             try
             {

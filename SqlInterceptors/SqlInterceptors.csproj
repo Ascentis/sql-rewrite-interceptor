@@ -55,7 +55,7 @@
   <ItemGroup>
     <Compile Include="Model\SqlRewriteSettings.cs" />
     <Compile Include="Plumbing\RegisterSqlCommandInjectors.cs" />
-    <Compile Include="Injectors\SqlCommandProcessorBase.cs" />
+    <Compile Include="Injectors\SqlCommandProcessor.cs" />
     <Compile Include="Injectors\SqlCommandRegExProcessor.cs" />
     <Compile Include="Injectors\SqlCommandTextStackTraceInjector.cs" />
     <Compile Include="Model\SqlRewriteRule.cs" />

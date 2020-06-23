@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -26,28 +27,31 @@ namespace Ascentis.Infrastructure
 
         public void RefreshRulesFromRepository()
         {
+            IEnumerable<SqlRewriteRule> items;
             lock (this)
             {
-                var items = _repository.LoadSqlRewriteRules();
-                SqlCommandRegExProcessor.SqlRewriteRules = items;
+                items = _repository.LoadSqlRewriteRules();
             }
+            SqlCommandRegExProcessor.SqlRewriteRules = items;
         }
 
         public void ApplySettingsFromRepository()
         {
+            IEnumerable<SqlRewriteSettings> settingsList;
             lock (this)
             {
-                var settingsList = _repository.LoadSqlRewriteSettings();
-                foreach (var settings in settingsList)
-                {
-                    if (!settings.MatchMachineName() || !settings.MatchProcessName())
-                        continue;
-                    Enabled = settings.Enabled;
-                    SqlCommandRegExProcessor.RegExInjectionEnabled = settings.RegExInjectionEnabled;
-                    SqlCommandTextStackTraceInjector.HashInjectionEnabled = settings.HashInjectionEnabled;
-                    SqlCommandTextStackTraceInjector.StackInjectionEnabled = settings.StackFrameInjectionEnabled;
-                    break;
-                }
+                settingsList = _repository.LoadSqlRewriteSettings();
+            }
+
+            foreach (var settings in settingsList)
+            {
+                if (!settings.MatchMachineName() || !settings.MatchProcessName())
+                    continue;
+                Enabled = settings.Enabled;
+                SqlCommandRegExProcessor.RegExInjectionEnabled = settings.RegExInjectionEnabled;
+                SqlCommandTextStackTraceInjector.HashInjectionEnabled = settings.HashInjectionEnabled;
+                SqlCommandTextStackTraceInjector.StackInjectionEnabled = settings.StackFrameInjectionEnabled;
+                break;
             }
         }
 
@@ -69,13 +73,14 @@ namespace Ascentis.Infrastructure
                     RegisterSqlCommandInjectors.Register();
                     _interceptorInited = true;
                 }
-                SqlCommandProcessorBase.Enabled = _enabled;
+                SqlCommandProcessor.Enabled = _enabled;
             }
         }
 
         private void ResetAutoRefreshTimerInterval()
         {
-            _autoRefreshTimer?.Change(_autoRefreshRulesEnabled ? AutoRefreshTimerInterval : Timeout.Infinite,_autoRefreshRulesEnabled ? AutoRefreshTimerInterval : Timeout.Infinite);
+            _autoRefreshTimer?.Change(_autoRefreshRulesAndSettingsEnabled ? AutoRefreshTimerInterval : Timeout.Infinite,
+                _autoRefreshRulesAndSettingsEnabled ? AutoRefreshTimerInterval : Timeout.Infinite);
         }
 
         private int _autoRefreshTimerInterval = 60000;
@@ -92,18 +97,18 @@ namespace Ascentis.Infrastructure
         }
 
         private Timer _autoRefreshTimer;
-        private bool _autoRefreshRulesEnabled;
-        public bool AutoRefreshRulesEnabled
+        private bool _autoRefreshRulesAndSettingsEnabled;
+        public bool AutoRefreshRulesAndSettingsEnabled
         {
-            get => _autoRefreshRulesEnabled;
+            get => _autoRefreshRulesAndSettingsEnabled;
             set
             {
-                if (value == _autoRefreshRulesEnabled)
+                if (value == _autoRefreshRulesAndSettingsEnabled)
                     return;
                 // ReSharper disable once InconsistentlySynchronizedField
                 if (value && !_repository.IsThreadSafe())
-                    throw new SqlRewriteRuleServiceException("Repository must own it's connection (be thread safe) in order to use auto-refresh of Sql rewrite rules");
-                _autoRefreshRulesEnabled = value;
+                    throw new SqlRewriteRuleServiceException("Repository must own it's connection (be thread safe) in order to use auto-refresh of Sql rewrite rules and its settings");
+                _autoRefreshRulesAndSettingsEnabled = value;
                 if (_autoRefreshTimer == null)
                     _autoRefreshTimer = new Timer(context =>
                     {
@@ -124,18 +129,18 @@ namespace Ascentis.Infrastructure
 
         public int AddRule(string databaseRegEx, string queryMatchRegEx, string queryReplacementString, RegexOptions regExOptions = 0)
         {
+            var rule = new SqlRewriteRule
+            {
+                DatabaseRegEx = databaseRegEx,
+                QueryMatchRegEx = queryMatchRegEx,
+                QueryReplacementString = queryReplacementString,
+                RegExOptions = regExOptions
+            };
             lock (this)
             {
-                var rule = new SqlRewriteRule
-                {
-                    DatabaseRegEx = databaseRegEx,
-                    QueryMatchRegEx = queryMatchRegEx,
-                    QueryReplacementString = queryReplacementString,
-                    RegExOptions = regExOptions
-                };
                 _repository.SaveSqlRewriteRule(rule);
-                return rule.Id;
             }
+            return rule.Id;
         }
 
         public void RemoveRule(int id)
@@ -161,7 +166,6 @@ namespace Ascentis.Infrastructure
             {
                 _repository.SaveSqlRewriteSettings(settings);
             }
-
             return settings.Id;
         }
 
@@ -175,7 +179,7 @@ namespace Ascentis.Infrastructure
 
         public void Dispose()
         {
-            AutoRefreshRulesEnabled = false;
+            AutoRefreshRulesAndSettingsEnabled = false;
             _autoRefreshTimer?.Dispose();
             Enabled = false;
         }

@@ -1,7 +1,7 @@
 ﻿
 namespace Ascentis.Infrastructure
 {
-    public class SqlCommandProcessorBase
+    public class SqlCommandProcessor
     {
         public static bool Enabled { get; set; }
     }

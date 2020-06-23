@@ -5,7 +5,7 @@ using SqlInterceptor.Properties;
 
 namespace Ascentis.Infrastructure
 {
-    public class SqlCommandRegExProcessor : SqlCommandProcessorBase
+    public class SqlCommandRegExProcessor
     {
         public static bool RegExInjectionEnabled = Settings.Default.RegExInjectionEnabled;
 
@@ -26,7 +26,7 @@ namespace Ascentis.Infrastructure
 
         public static string ProcessSqlForRegExReplacement(DbConnection dbConnection, string sqlCommand)
         {
-            if (!RegExInjectionEnabled || !Enabled || dbConnection == null)
+            if (!RegExInjectionEnabled || !SqlCommandProcessor.Enabled || dbConnection == null)
                 return sqlCommand;
             try
             {

@@ -75,7 +75,7 @@ namespace SqlInterceptorsTest
                 using (var service = new SqlRewriteRuleService(repo, true))
                 {
                     service.AutoRefreshTimerInterval = 1000;
-                    service.AutoRefreshRulesEnabled = true;
+                    service.AutoRefreshRulesAndSettingsEnabled = true;
                     using (var con = new SqlConnection(Settings.Default.ConnectionString))
                     {
                         con.Open();
@@ -121,7 +121,7 @@ namespace SqlInterceptorsTest
                         }
                     }
                     service.AutoRefreshTimerInterval = 500;
-                    service.AutoRefreshRulesEnabled = true;
+                    service.AutoRefreshRulesAndSettingsEnabled = true;
                     Thread.Sleep(1000);
                     Assert.IsNotNull(throwException);
                     Assert.IsFalse(service.Enabled);
@@ -148,7 +148,7 @@ namespace SqlInterceptorsTest
                         }
                     }
                     service.AutoRefreshTimerInterval = 500;
-                    service.AutoRefreshRulesEnabled = true;
+                    service.AutoRefreshRulesAndSettingsEnabled = true;
                     Thread.Sleep(1000);
                     Assert.IsNotNull(throwException);
                     Assert.IsFalse(service.Enabled);
