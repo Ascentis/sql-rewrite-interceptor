@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Ascentis.SQLRewriteInterceptor</id>
+    <version>1.1.0.0</version>
+    <authors>Jose Sebastian Battig</authors>
+    <owners>Ascentis</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/Ascentis/infrastructure</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Utility class to use with ADO.NET that allows pre-processing any SQL used vua SqlCommand class in order to allow optimization/hinting in production environments without recompiling code</description>
+    <releaseNotes>First release</releaseNotes>
+    <copyright>Copyright 2020, Ascentis Corporation</copyright>
+    <tags>ado.net sql-rewrite hinting optimization performance sql</tags>
+    <dependencies>
+      <dependency id="Lib.Harmony" version="2.0.1" />
+      <dependency id="Ascentis.Infrastructure" version="2.3.0" />
+    </dependencies>
+    <contentFiles>
+    </contentFiles>
+  </metadata>
+  <files>
+    <file src="bin\Release\Ascentis.SQLInterceptors.dll" target="lib\net40" />
+    <file src="bin\Release\Ascentis.SQLInterceptors.pdb" target="lib\net40" />
+  </files>
+</package>

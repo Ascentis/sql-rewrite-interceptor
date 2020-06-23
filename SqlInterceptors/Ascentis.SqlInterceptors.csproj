@@ -7,8 +7,8 @@
     <ProjectGuid>{B56AC6B7-D66D-493D-A641-DE8E8F5D815C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SqlInterceptor</RootNamespace>
-    <AssemblyName>SqlInterceptor</AssemblyName>
+    <RootNamespace>Ascentis.Infrastructure</RootNamespace>
+    <AssemblyName>Ascentis.SqlInterceptors</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -34,15 +34,6 @@
   <ItemGroup>
     <Reference Include="0Harmony, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Lib.Harmony.2.0.1\lib\net45\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="Ascentis.ComPlusCache, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ascentis.Infrastructure.2.3.0\lib\net40\Ascentis.ComPlusCache.dll</HintPath>
-    </Reference>
-    <Reference Include="Ascentis.Dynamo, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ec36716e8e64fe69, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ascentis.Infrastructure.2.3.0\lib\net40\Ascentis.Dynamo.dll</HintPath>
-    </Reference>
-    <Reference Include="Ascentis.ExternalCache, Version=1.3.0.0, Culture=neutral, PublicKeyToken=1371ebc800287771, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ascentis.Infrastructure.2.3.0\lib\net40\Ascentis.ExternalCache.dll</HintPath>
     </Reference>
     <Reference Include="Ascentis.Infrastructure, Version=1.2.0.0, Culture=neutral, PublicKeyToken=374afd0f141d13fa, processorArchitecture=MSIL">
       <HintPath>..\packages\Ascentis.Infrastructure.2.3.0\lib\net40\Ascentis.Infrastructure.dll</HintPath>
@@ -83,6 +74,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="sql-rewrite-interceptor.nuspec" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

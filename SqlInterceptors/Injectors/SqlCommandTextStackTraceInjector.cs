@@ -2,7 +2,7 @@
 using System.Data.Common;
 using System.Diagnostics;
 using System.Reflection;
-using SqlInterceptor.Properties;
+using Ascentis.Infrastructure.Properties;
 
 namespace Ascentis.Infrastructure
 {

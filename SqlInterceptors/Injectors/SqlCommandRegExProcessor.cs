@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using SqlInterceptor.Properties;
+using Ascentis.Infrastructure.Properties;
 
 namespace Ascentis.Infrastructure
 {

@@ -9,7 +9,7 @@ namespace Ascentis.Infrastructure
 
         private Regex BuildRegEx(string pattern)
         {
-            return new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            return new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase,  new TimeSpan(0, 0, 1));
         }
 
         private Regex _machineRegEx;

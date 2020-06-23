@@ -72,9 +72,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SqlInterceptors\SqlInterceptors.csproj">
+    <ProjectReference Include="..\SqlInterceptors\Ascentis.SqlInterceptors.csproj">
       <Project>{b56ac6b7-d66d-493d-a641-de8e8f5d815c}</Project>
-      <Name>SqlInterceptors</Name>
+      <Name>Ascentis.SqlInterceptors</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

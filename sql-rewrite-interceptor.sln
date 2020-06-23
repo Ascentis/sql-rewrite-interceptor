@@ -5,7 +5,12 @@ VisualStudioVersion = 15.0.28307.1169
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlInterceptorsTests", "SqlInterceptorsTest\SqlInterceptorsTests.csproj", "{94E9DC6C-D6C0-427A-B5EA-27002BDCC87E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlInterceptors", "SqlInterceptors\SqlInterceptors.csproj", "{B56AC6B7-D66D-493D-A641-DE8E8F5D815C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ascentis.SqlInterceptors", "SqlInterceptors\Ascentis.SqlInterceptors.csproj", "{B56AC6B7-D66D-493D-A641-DE8E8F5D815C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{84D20B62-6309-411C-8EF4-E7C338340EEF}"
+	ProjectSection(SolutionItems) = preProject
+		sql-rewrite-interceptor.nuspec = sql-rewrite-interceptor.nuspec
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
