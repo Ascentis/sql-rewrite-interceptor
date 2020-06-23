@@ -1,4 +1,22 @@
-#Sample usage
+# SQL-Rewrite-Interceptor
+
+## Description
+
+This package provides the ability to instrument a .NET application reliant on ado.net in a way that allows SQL re-write (sql text modification) in
+a production environment without requiring applicaiton re-compilation.
+
+This allows for query fast deployment (hotfixing) of query optimization while working on changing source code application logic.
+
+## Nuget package name
+
+Ascentis.SQLRewriteInterceptor
+
+## Dependencies
+
+- Lib.Harmony
+- Ascentis.Infrastructure
+
+## Sample usage
 
 ```C#
 
