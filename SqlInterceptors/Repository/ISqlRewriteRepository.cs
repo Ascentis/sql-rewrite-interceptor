@@ -10,6 +10,7 @@ namespace Ascentis.Infrastructure
         void SaveSqlRewriteSettings(SqlRewriteSettings settings);
         IEnumerable<SqlRewriteSettings> LoadSqlRewriteSettings();
         void RemoveSqlRewriteSettings(int id);
+        void RemoveAllSqlRewriteSettings();
         bool IsThreadSafe();
     }
 }

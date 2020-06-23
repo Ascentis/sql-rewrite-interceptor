@@ -27,8 +27,6 @@ namespace SqlInterceptorsTest
                 {
                     using (var conn = new SqlConnection(Settings.Default.ConnectionString))
                     {
-                        //SqlCommandTextStackTraceInjector.HashInjectionEnabled = false;
-                        //SqlCommandTextStackTraceInjector.StackInjectionEnabled = false;
                         conn.Open();
                         var stopWatch = new Stopwatch();
                         stopWatch.Start();
@@ -56,8 +54,7 @@ namespace SqlInterceptorsTest
                             }
                         }
                         stopWatch.Stop();
-                        Assert.IsTrue(Math.Abs(intervalFullInjection.TotalMilliseconds - stopWatch.Elapsed.TotalMilliseconds) < 3500);
-                        Assert.IsTrue(Math.Abs(intervalFullInjection.TotalMilliseconds - stopWatch.Elapsed.TotalMilliseconds) > 1000);
+                        Assert.IsTrue(Math.Abs(intervalFullInjection.TotalMilliseconds / stopWatch.Elapsed.TotalMilliseconds) < 2, $"{intervalFullInjection.TotalMilliseconds} vs {stopWatch.Elapsed.TotalMilliseconds}");
                     }
                 }
             }

@@ -162,6 +162,7 @@ namespace SqlInterceptorsTest
             using (var conn = new SqlConnection(Settings.Default.ConnectionString))
             {
                 var repo = new SqlRewriteDbRepository(conn);
+                repo.RemoveAllSqlRewriteSettings();
                 var settings = new SqlRewriteSettings()
                 {
                     MachineRegEx = Settings.Default.MachineNameMatchString,
@@ -172,12 +173,13 @@ namespace SqlInterceptorsTest
                     StackFrameInjectionEnabled = false
                 };
                 repo.SaveSqlRewriteSettings(settings);
-                using (var service = new SqlRewriteRuleService(repo, true))
+                using (var service = new SqlRewriteRuleService(repo))
                 {
-                    Assert.IsTrue(service.Enabled);
+                    Assert.IsFalse(service.Enabled);
                     Assert.IsTrue(SqlCommandRegExProcessor.RegExInjectionEnabled);
                     Assert.IsTrue(SqlCommandTextStackTraceInjector.HashInjectionEnabled);
                     Assert.IsTrue(SqlCommandTextStackTraceInjector.StackInjectionEnabled);
+                    service.Enabled = true;
                     service.ApplySettingsFromRepository();
                     Assert.IsTrue(service.Enabled);
                     Assert.IsFalse(SqlCommandRegExProcessor.RegExInjectionEnabled);

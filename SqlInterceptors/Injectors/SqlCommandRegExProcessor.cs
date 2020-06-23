@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using Ascentis.Infrastructure.Properties;
 
@@ -24,7 +25,7 @@ namespace Ascentis.Infrastructure
             }
         }
 
-        public static string ProcessSqlForRegExReplacement(DbConnection dbConnection, string sqlCommand)
+        public static string ProcessSqlForRegExReplacement(DbConnection dbConnection, string sqlCommand, CommandType commandType)
         {
             if (!RegExInjectionEnabled || !SqlCommandProcessor.Enabled || dbConnection == null)
                 return sqlCommand;

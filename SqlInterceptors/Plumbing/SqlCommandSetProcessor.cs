@@ -13,16 +13,18 @@ namespace Ascentis.Infrastructure
             {
                 if (SqlCommandInterceptor.SqlCommandSetEvent == null)
                     return replacedCmdText;
+                if (SqlCommandTextStackTraceInjector.HashInjectionEnabled || SqlCommandTextStackTraceInjector.StackInjectionEnabled)
+                    SqlCommandTextStackTraceInjector.AddSqlCommandToDictionary(__instance, cmdText);
                 foreach (var chainedSqlCommandDelegate in SqlCommandInterceptor.SqlCommandSetEvent.GetInvocationList())
                 {
-                    replacedCmdText = (string) chainedSqlCommandDelegate.DynamicInvoke(__instance.Connection, replacedCmdText);
+                    replacedCmdText = (string) chainedSqlCommandDelegate.DynamicInvoke(__instance.Connection, replacedCmdText, __instance.CommandType);
                 }
 
                 return replacedCmdText;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                // Ignore any exception. We don't want to prevent app from operating because our interceptor errored out
+                SqlCommandInterceptor.ExceptionDelegateEvent?.Invoke(e);
                 return cmdText;
             }
         }

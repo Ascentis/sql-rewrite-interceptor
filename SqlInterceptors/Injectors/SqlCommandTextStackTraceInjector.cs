@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Reflection;
 using Ascentis.Infrastructure.Properties;
@@ -8,14 +11,17 @@ namespace Ascentis.Infrastructure
 {
     public class SqlCommandTextStackTraceInjector
     {
+        private static ConcurrentDictionary<SqlCommand, string> _originalSqlCommand = new ConcurrentDictionary<SqlCommand, string>();
         public static bool HashInjectionEnabled = Settings.Default.HashInjectionEnabled;
         public static bool StackInjectionEnabled = Settings.Default.StackFrameInjectionEnabled;
-        public static string InjectStackTrace(DbConnection dbConnection, string sqlCommand)
+        public static string InjectStackTrace(DbConnection dbConnection, string sqlCommand, CommandType commandType)
         {
             if (!SqlCommandProcessor.Enabled || sqlCommand.Contains("/*AHSH=") || sqlCommand.Contains("/*MTDNM="))
                 return sqlCommand;
             try
             {
+                if (commandType != CommandType.Text)
+                    return sqlCommand;
                 var instrumentedSqlCmd = sqlCommand;
                 if (StackInjectionEnabled)
                 {
@@ -48,6 +54,22 @@ namespace Ascentis.Infrastructure
                 HashInjectionEnabled = false;
                 return sqlCommand;
             }
+        }
+
+        public static void AddSqlCommandToDictionary(SqlCommand cmd, string cmdText)
+        {
+            _originalSqlCommand.TryAdd(cmd, cmdText);
+        }
+
+        public static void RemoveSqlCommandFromDictionary(SqlCommand cmd)
+        {
+            // ReSharper disable once UnusedVariable
+            _originalSqlCommand.TryRemove(cmd, out var cmdText);
+        }
+
+        public static bool GetOriginalSqlCommandFromDictionary(SqlCommand cmd, out string sql)
+        {
+            return _originalSqlCommand.TryGetValue(cmd, out sql);
         }
     }
 }

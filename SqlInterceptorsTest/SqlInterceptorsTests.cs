@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.SqlClient;
 using Ascentis.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -71,6 +72,39 @@ namespace SqlInterceptorsTest
                 {
                     var version = cmd.ExecuteScalar().ToString();
                     Assert.IsFalse(version.Contains("Microsoft"));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestStoredProcRewrite()
+        {
+            SqlCommandProcessor.Enabled = true;
+            //SqlCommandTextStackTraceInjector.HashInjectionEnabled = false;
+            //SqlCommandTextStackTraceInjector.StackInjectionEnabled = false;
+            var rules = new SqlRewriteRule[1];
+            rules[0] = new SqlRewriteRule
+            {
+                DatabaseRegEx = ".*", 
+                QueryMatchRegEx = Stm, 
+                QueryReplacementString = "sp_getsqlqueueversion"
+            };
+            SqlCommandRegExProcessor.SqlRewriteRules = rules;
+            using (var con = new SqlConnection(Settings.Default.ConnectionString))
+            {
+                con.Open();
+                using (var cmd = new SqlCommand(Stm, con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    try
+                    {
+                        cmd.ExecuteScalar();
+                    }
+                    catch (SqlException e)
+                    {
+                        if (!e.Message.Contains("parameter"))
+                            throw;
+                    }
                 }
             }
         }

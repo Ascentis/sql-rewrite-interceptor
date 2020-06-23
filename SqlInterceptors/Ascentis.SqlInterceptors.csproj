@@ -51,8 +51,10 @@
     <Compile Include="Injectors\SqlCommandTextStackTraceInjector.cs" />
     <Compile Include="Model\SqlRewriteRule.cs" />
     <Compile Include="Plumbing\SqlCommandCommandTextSetterInterceptor.cs" />
+    <Compile Include="Plumbing\SqlCommandCommandTypeSetterInterceptor.cs" />
     <Compile Include="Plumbing\SqlCommandConstructorInterceptor.cs" />
     <Compile Include="Injectors\SqlCommandInterceptor.cs" />
+    <Compile Include="Plumbing\SqlCommandDisposeInterceptor.cs" />
     <Compile Include="Plumbing\SqlCommandSetProcessor.cs" />
     <Compile Include="Plumbing\SqlInterceptorsInit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

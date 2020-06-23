@@ -65,7 +65,10 @@ namespace Ascentis.Infrastructure
                     return;
                 _enabled = value;
                 if (_enabled)
+                {
+                    ApplySettingsFromRepository();
                     RefreshRulesFromRepository();
+                }
 
                 if (!_interceptorInited)
                 {

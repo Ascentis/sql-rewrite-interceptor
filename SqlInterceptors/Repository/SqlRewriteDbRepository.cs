@@ -228,6 +228,15 @@ namespace Ascentis.Infrastructure
             }
         }
 
+        public void RemoveAllSqlRewriteSettings()
+        {
+            using (var truncateSqlRewriteInjectorSettings =
+                new SqlCommand("TRUNCATE TABLE SqlRewriteInjectorSettings", _sqlConnection))
+            {
+                truncateSqlRewriteInjectorSettings.ExecuteNonQuery();
+            }
+        }
+
         public bool IsThreadSafe()
         {
             return _connectionOwned;
