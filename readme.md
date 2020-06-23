@@ -6,11 +6,11 @@ using System;
 using System.Data.SqlClient;
 using Ascentis.Infrastructure;
 
-namespace ConsoleApp2
+namespace ConsoleApp
 {
     class Program
     {
-        private const string Cs = "Server=vm-pc-sql02; Database=master; Trusted_Connection=True;";
+        private const string Cs = "Server=<Your Server Name>; Database=<Your Database>; Trusted_Connection=True;";
 
         static void Main()
         {
