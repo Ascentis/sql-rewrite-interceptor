@@ -12,7 +12,7 @@ namespace SqlInterceptorsTest.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.9.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.6.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,7 +25,7 @@ namespace SqlInterceptorsTest.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Server=vm-pc-sql02; Database=master; Trusted_Connection=True;")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Server=SEBAMACPROWIN10\\SQLVM; Database=master; Trusted_Connection=True;")]
         public string ConnectionString {
             get {
                 return ((string)(this["ConnectionString"]));
@@ -34,7 +34,7 @@ namespace SqlInterceptorsTest.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("USR-SBATTIG")]
+        [global::System.Configuration.DefaultSettingValueAttribute("SEBAMACPROWIN10")]
         public string MachineNameMatchString {
             get {
                 return ((string)(this["MachineNameMatchString"]));

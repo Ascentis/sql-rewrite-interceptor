@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\SqlRewriteModelBase.cs" />
     <Compile Include="Model\SqlRewriteSettings.cs" />
     <Compile Include="Plumbing\RegisterSqlCommandInjectors.cs" />
     <Compile Include="Injectors\SqlCommandProcessor.cs" />

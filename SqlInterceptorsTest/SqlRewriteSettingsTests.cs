@@ -7,6 +7,12 @@ namespace SqlInterceptorsTest
     [TestClass]
     public class SqlRewriteSettingsTests
     {
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            TestUtils.InitTests();
+        }
+
         [TestMethod]
         public void TestSettingsMatch()
         {

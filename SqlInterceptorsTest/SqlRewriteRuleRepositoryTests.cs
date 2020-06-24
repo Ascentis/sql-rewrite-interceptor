@@ -13,7 +13,7 @@ namespace SqlInterceptorsTest
         [TestInitialize]
         public void TestInitialize()
         {
-            TestUtils.TruncateTables();
+            TestUtils.InitTests();
         }
 
         [TestMethod]

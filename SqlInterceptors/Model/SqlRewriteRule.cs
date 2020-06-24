@@ -1,9 +1,8 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace Ascentis.Infrastructure
 {
-    public class SqlRewriteRule
+    public class SqlRewriteRule : SqlRewriteModelBase
     {
         private Regex _databaseRegex;
         private string _databaseRegExPattern;
@@ -15,43 +14,16 @@ namespace Ascentis.Infrastructure
 
         public string QueryReplacementString { get; set; }
  
-        private Regex BuildRegEx(string pattern)
-        {
-            return new Regex(pattern, RegexOptions.Compiled | RegExOptions);
-        }
-
         public string DatabaseRegEx
         {
             get => _databaseRegExPattern;
-            set
-            {
-                if (value == _databaseRegExPattern)
-                    return;
-                if (value == "")
-                {
-                    _databaseRegex = null;
-                    return;
-                }
-                _databaseRegExPattern = value;
-                _databaseRegex = BuildRegEx(_databaseRegExPattern);
-            }
+            set => SetRegExProperty(value, ref _databaseRegExPattern, ref _databaseRegex, RegExOptions);
         }
         
         public string QueryMatchRegEx
         {
             get => _queryMatchRegExPattern;
-            set
-            {
-                if (value == _queryMatchRegExPattern)
-                    return;
-                if (value == "")
-                {
-                    _queryMatchRegEx = null;
-                    return;
-                }
-                _queryMatchRegExPattern = value;
-                _queryMatchRegEx = BuildRegEx(_queryMatchRegExPattern);
-            }
+            set => SetRegExProperty(value, ref _queryMatchRegExPattern, ref _queryMatchRegEx, RegExOptions);
         }
 
         public bool MatchDatabase(string database)

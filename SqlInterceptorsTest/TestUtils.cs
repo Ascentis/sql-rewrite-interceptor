@@ -1,4 +1,5 @@
 ﻿using System.Data.SqlClient;
+using Ascentis.Infrastructure;
 using SqlInterceptorsTest.Properties;
 
 namespace SqlInterceptorsTest
@@ -33,6 +34,13 @@ namespace SqlInterceptorsTest
                     }
                 }
             }
+        }
+
+        public static void InitTests()
+        {
+            SqlInterceptorsInit.Init();
+            RegisterSqlCommandInjectors.Register();
+            TruncateTables();
         }
     }
 }

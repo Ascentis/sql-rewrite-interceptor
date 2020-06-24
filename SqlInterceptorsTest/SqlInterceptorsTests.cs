@@ -15,8 +15,7 @@ namespace SqlInterceptorsTest
         [TestInitialize]
         public void TestInit()
         {
-            SqlInterceptorsInit.Init();
-            RegisterSqlCommandInjectors.Register();
+            TestUtils.InitTests();
         }
 
         [TestCleanup]

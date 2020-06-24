@@ -17,11 +17,7 @@ namespace Ascentis.Infrastructure
         {
             set
             {
-                _sqlRewriteRules.SwapNewAndExecute(newObj =>
-                {
-                    foreach (var item in value)
-                        newObj.Add(item);
-                }, oldObj => { });
+                _sqlRewriteRules.SwapNewAndExecute(newObj => { newObj.AddRange(value); }, oldObj => { });
             }
         }
 

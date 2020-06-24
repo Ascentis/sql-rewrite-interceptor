@@ -3,10 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="ConnectionString" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">Server=vm-pc-sql02; Database=master; Trusted_Connection=True;</Value>
+      <Value Profile="(Default)">Server=SEBAMACPROWIN10\SQLVM; Database=master; Trusted_Connection=True;</Value>
     </Setting>
     <Setting Name="MachineNameMatchString" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">USR-SBATTIG</Value>
+      <Value Profile="(Default)">SEBAMACPROWIN10</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -3,13 +3,13 @@ using System.Text.RegularExpressions;
 
 namespace Ascentis.Infrastructure
 {
-    public class SqlRewriteSettings
+    public class SqlRewriteSettings : SqlRewriteModelBase
     {
         public int Id;
 
-        private Regex BuildRegEx(string pattern)
+        protected override Regex BuildRegEx(string pattern, RegexOptions regexOptions)
         {
-            return new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase,  new TimeSpan(0, 0, 1));
+            return base.BuildRegEx(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | regexOptions);
         }
 
         private Regex _machineRegEx;
@@ -17,18 +17,7 @@ namespace Ascentis.Infrastructure
         public string MachineRegEx
         {
             get => _machineRegExPattern;
-            set
-            {
-                if (value == _machineRegExPattern)
-                    return;
-                if (value == "")
-                {
-                    _machineRegEx = null;
-                    return;
-                }
-                _machineRegExPattern = value;
-                _machineRegEx = BuildRegEx(_machineRegExPattern);
-            }
+            set => SetRegExProperty(value, ref _machineRegExPattern, ref _machineRegEx);
         }
 
         private Regex _processNameRegEx;
@@ -36,18 +25,7 @@ namespace Ascentis.Infrastructure
         public string ProcessNameRegEx
         {
             get => _processNameRegExPattern;
-            set
-            {
-                if (value == _processNameRegExPattern)
-                    return;
-                if (value == "")
-                {
-                    _processNameRegEx = null;
-                    return;
-                }
-                _processNameRegExPattern = value;
-                _processNameRegEx = BuildRegEx(_processNameRegExPattern);
-            }
+            set => SetRegExProperty(value, ref _processNameRegExPattern, ref _processNameRegEx);
         }
 
         public bool MatchProcessName()

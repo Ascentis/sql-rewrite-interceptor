@@ -15,7 +15,7 @@ namespace SqlInterceptorsTest
         [TestInitialize]
         public void TestInitialize()
         {
-            TestUtils.TruncateTables();
+            TestUtils.InitTests();
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace SqlInterceptorsTest
                             }
                         }
                         stopWatch.Stop();
-                        Assert.IsTrue(Math.Abs(intervalFullInjection.TotalMilliseconds / stopWatch.Elapsed.TotalMilliseconds) < 2, $"{intervalFullInjection.TotalMilliseconds} vs {stopWatch.Elapsed.TotalMilliseconds}");
+                        Assert.IsTrue(Math.Abs(intervalFullInjection.TotalMilliseconds / stopWatch.Elapsed.TotalMilliseconds) < 3, $"{intervalFullInjection.TotalMilliseconds} vs {stopWatch.Elapsed.TotalMilliseconds}");
                     }
                 }
             }

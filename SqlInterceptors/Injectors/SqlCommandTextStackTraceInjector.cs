@@ -65,7 +65,7 @@ namespace Ascentis.Infrastructure
 
         public static void AddSqlCommandToDictionary(SqlCommand cmd, string cmdText)
         {
-            OriginalSqlCommand.TryAdd(cmd, cmdText);
+            OriginalSqlCommand.AddOrUpdate(cmd, (v) => cmdText, (k, v) => cmdText);
         }
 
         public static void RemoveSqlCommandFromDictionary(SqlCommand cmd)
