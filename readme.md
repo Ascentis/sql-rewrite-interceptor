@@ -47,8 +47,6 @@ CREATE TABLE [dbo].[SqlRewriteInjectorSettings](
 ```
 ## RegEx options
 
-public enum RegexOptions
-{
     /// Specifies case-insensitive matching. For more information, see the "Case-Insensitive Matching " section in the Regular Expression Options topic.
 	/* IMPORTANT: IgnoreCase always on for RegEx applied to settings */
     [__DynamicallyInvokable] IgnoreCase = 1, 
@@ -78,7 +76,6 @@ public enum RegexOptions
     
 	/// Specifies that cultural differences in language is ignored. For more information, see the "Comparison Using the Invariant Culture" section in the Regular Expression Options topic.
     [__DynamicallyInvokable] CultureInvariant = 512, // 0x00000200
-}
 
 ## Remarks
 
