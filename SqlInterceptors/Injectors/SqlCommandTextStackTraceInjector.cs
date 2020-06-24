@@ -14,39 +14,45 @@ namespace Ascentis.Infrastructure
         private static ConcurrentDictionary<SqlCommand, string> _originalSqlCommand = new ConcurrentDictionary<SqlCommand, string>();
         public static bool HashInjectionEnabled = Settings.Default.HashInjectionEnabled;
         public static bool StackInjectionEnabled = Settings.Default.StackFrameInjectionEnabled;
+        public static int CallStackEntriesToReport = Settings.Default.StackEntriesReportedCount;
         public static string InjectStackTrace(DbConnection dbConnection, string sqlCommand, CommandType commandType)
         {
-            if (!SqlCommandProcessor.Enabled || sqlCommand.Contains("/*AHSH=") || sqlCommand.Contains("/*MTDNM="))
+            if (!SqlCommandProcessor.Enabled || commandType != CommandType.Text || sqlCommand.StartsWith("/*-*/"))
                 return sqlCommand;
             try
             {
-                if (commandType != CommandType.Text)
-                    return sqlCommand;
-                var instrumentedSqlCmd = sqlCommand;
+                var stackTraceText = "";
                 if (StackInjectionEnabled)
                 {
-                    var callerMethodName = "";
+                    var callStack = "";
                     var stackTrace = new StackTrace();
                     var stackFrames = stackTrace.GetFrames();
                     if (stackFrames != null)
+                    {
+                        var stackEntries = CallStackEntriesToReport;
                         foreach (var stackFrame in stackFrames)
                         {
                             var memberInfo = stackFrame.GetMethod().DeclaringType;
                             if (memberInfo == null || memberInfo.Assembly == Assembly.GetExecutingAssembly() || memberInfo.Assembly.FullName.Contains("mscorlib"))
                                 continue;
-                            callerMethodName = memberInfo.FullName + '.' + stackFrame.GetMethod().Name;
-                            break;
+                            callStack += $"{memberInfo.FullName}.{stackFrame.GetMethod().Name}\r\n";
+                            if(stackEntries-- <= 0)
+                                break;
                         }
+                    }
 
-                    if (callerMethodName != "")
-                        instrumentedSqlCmd = $"/*MTDNM={callerMethodName}*/{instrumentedSqlCmd}";
+                    if (callStack != "")
+                        stackTraceText = $"\r\n/* Top {CallStackEntriesToReport} call stack entries:\r\n{callStack} */";
                 }
 
-                if (!HashInjectionEnabled) 
-                    return instrumentedSqlCmd;
+                var hashText = "";
+                if (HashInjectionEnabled)
+                {
+                    var hash = (uint) sqlCommand.GetHashCode();
+                    hashText = $"/*AHSH={hash}*/ ";
+                }
 
-                var hash = (uint) sqlCommand.GetHashCode();
-                return $"/*AHSH={hash}*/{instrumentedSqlCmd}";
+                return $"/*-*/{hashText}{sqlCommand}{stackTraceText}";
             }
             catch (Exception e)
             {

@@ -49,5 +49,14 @@ namespace Ascentis.Infrastructure.Properties {
                 return ((bool)(this["StackFrameInjectionEnabled"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int StackEntriesReportedCount {
+            get {
+                return ((int)(this["StackEntriesReportedCount"]));
+            }
+        }
     }
 }

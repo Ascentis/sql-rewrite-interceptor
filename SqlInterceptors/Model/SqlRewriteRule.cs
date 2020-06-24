@@ -17,7 +17,7 @@ namespace Ascentis.Infrastructure
  
         private Regex BuildRegEx(string pattern)
         {
-            return new Regex(pattern, RegexOptions.Compiled | RegExOptions, new TimeSpan(0, 0, 1));
+            return new Regex(pattern, RegexOptions.Compiled | RegExOptions);
         }
 
         public string DatabaseRegEx

@@ -64,5 +64,6 @@ namespace Ascentis.Infrastructure
         public bool HashInjectionEnabled { get; set; }
         public bool RegExInjectionEnabled { get; set; }
         public bool StackFrameInjectionEnabled { get; set; }
+        public int CallStackEntriesToReport { get; set; }
     }
 }

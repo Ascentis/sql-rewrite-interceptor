@@ -115,6 +115,7 @@ namespace SqlInterceptorsTest
                 Assert.AreEqual(item.HashInjectionEnabled, loadedItem.HashInjectionEnabled);
                 Assert.AreEqual(item.RegExInjectionEnabled, loadedItem.RegExInjectionEnabled);
                 Assert.AreEqual(item.StackFrameInjectionEnabled, loadedItem.StackFrameInjectionEnabled);
+                Assert.AreEqual(item.CallStackEntriesToReport, loadedItem.CallStackEntriesToReport);
                 return;
             }
             throw new Exception("Settings entry doesn't exist");
