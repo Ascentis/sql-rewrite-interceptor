@@ -47,9 +47,9 @@ CREATE TABLE [dbo].[SqlRewriteInjectorSettings](
 ```
 ## RegEx options
 
+### IgnoreCase = 1, 
 Specifies case-insensitive matching. For more information, see the "Case-Insensitive Matching " section in the Regular Expression Options topic.
 IMPORTANT: IgnoreCase always on for RegEx applied to settings
-[__DynamicallyInvokable] IgnoreCase = 1, 
     
 Multiline mode. Changes the meaning of ^ and $ so they match at the beginning and end, respectively, of any line, and not just the beginning and end of the entire string. For more information, see the "Multiline Mode" section in the Regular Expression Options topic.
 [__DynamicallyInvokable] Multiline = 2,
