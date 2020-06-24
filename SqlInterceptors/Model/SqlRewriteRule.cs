@@ -10,7 +10,29 @@ namespace Ascentis.Infrastructure
         private string _queryMatchRegExPattern;
 
         public int Id { get; set; }
-        public RegexOptions RegExOptions { get; set;}
+
+        private RegexOptions _regexOptions;
+        public RegexOptions RegExOptions
+        {
+            get => _regexOptions;
+            set
+            {
+                if (_regexOptions == value)
+                    return;
+                var oldRegExPattern = QueryMatchRegEx;
+                var oldDbRegExPattern = DatabaseRegEx;
+                QueryMatchRegEx = "";
+                DatabaseRegEx = "";
+                _regexOptions = value;
+                DatabaseRegEx = oldDbRegExPattern;
+                QueryMatchRegEx = oldRegExPattern;
+            }
+        }
+
+        protected override Regex BuildRegEx(string pattern, RegexOptions regexOptions)
+        {
+            return base.BuildRegEx(pattern, RegexOptions.Compiled | RegexOptions.Singleline | regexOptions);
+        }
 
         public string QueryReplacementString { get; set; }
  

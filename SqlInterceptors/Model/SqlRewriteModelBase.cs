@@ -13,12 +13,12 @@ namespace Ascentis.Infrastructure
         {
             if (value == patternField)
                 return;
+            patternField = value;
             if (value == "")
             {
                 regexField = null;
                 return;
             }
-            patternField = value;
             regexField = BuildRegEx(patternField, regExOptions);
         }
     }

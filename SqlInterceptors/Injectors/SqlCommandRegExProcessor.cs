@@ -8,6 +8,7 @@ namespace Ascentis.Infrastructure
 {
     public class SqlCommandRegExProcessor
     {
+        public const string RegReplacementIndicator = "/*x*/";
         public static bool RegExInjectionEnabled = Settings.Default.RegExInjectionEnabled;
 
         // ReSharper disable once InconsistentNaming
@@ -23,7 +24,7 @@ namespace Ascentis.Infrastructure
 
         public static string ProcessSqlForRegExReplacement(DbConnection dbConnection, string sqlCommand, CommandType commandType)
         {
-            if (!RegExInjectionEnabled || !SqlCommandProcessor.Enabled || dbConnection == null)
+            if (!RegExInjectionEnabled || !SqlCommandProcessor.Enabled || dbConnection == null || sqlCommand.EndsWith(RegReplacementIndicator))
                 return sqlCommand;
             try
             {
@@ -34,7 +35,7 @@ namespace Ascentis.Infrastructure
                         if (!regEx.MatchDatabase(dbConnection.Database))
                             continue;
                         var newCommand = regEx.ProcessQuery(sqlCommand);
-                        if (newCommand != sqlCommand)
+                        if (newCommand.EndsWith(RegReplacementIndicator) || newCommand != sqlCommand)
                             return newCommand;
                     }
 

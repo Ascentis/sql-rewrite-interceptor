@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text.RegularExpressions;
 using Ascentis.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SqlInterceptorsTest.Properties;
@@ -61,14 +62,16 @@ namespace SqlInterceptorsTest
             var rules = new SqlRewriteRule[1];
             rules[0] = new SqlRewriteRule();
             rules[0].DatabaseRegEx = ".*";
-            rules[0].QueryMatchRegEx = ".*";
-            rules[0].QueryReplacementString = "SELECT GETDATE()";
+            rules[0].QueryMatchRegEx = $"(.*){Stm}(.*)";
+            rules[0].QueryReplacementString = $"$1SELECT GETDATE()$2\r\n{SqlCommandRegExProcessor.RegReplacementIndicator}";
+            // rules[0].RegExOptions = RegexOptions.Singleline;
             SqlCommandRegExProcessor.SqlRewriteRules = rules;
             using (var con = new SqlConnection(Settings.Default.ConnectionString))
             {
                 con.Open();
                 using (var cmd = new SqlCommand(Stm, con))
                 {
+                    Assert.IsTrue(cmd.CommandText.EndsWith(SqlCommandRegExProcessor.RegReplacementIndicator), $"SQL should end with {SqlCommandRegExProcessor.RegReplacementIndicator}");
                     var version = cmd.ExecuteScalar().ToString();
                     Assert.IsFalse(version.Contains("Microsoft"));
                 }
@@ -98,6 +101,7 @@ namespace SqlInterceptorsTest
                     try
                     {
                         cmd.ExecuteScalar();
+                        throw new Exception("Expecting exception missing parameter executing stored proc");
                     }
                     catch (SqlException e)
                     {
