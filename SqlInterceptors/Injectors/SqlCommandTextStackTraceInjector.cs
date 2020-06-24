@@ -11,13 +11,14 @@ namespace Ascentis.Infrastructure
 {
     public class SqlCommandTextStackTraceInjector
     {
-        private static ConcurrentDictionary<SqlCommand, string> _originalSqlCommand = new ConcurrentDictionary<SqlCommand, string>();
+        private const string WasProcessedIndicator = "/*-*/";
+        private static readonly ConcurrentDictionary<SqlCommand, string> OriginalSqlCommand = new ConcurrentDictionary<SqlCommand, string>();
         public static bool HashInjectionEnabled = Settings.Default.HashInjectionEnabled;
         public static bool StackInjectionEnabled = Settings.Default.StackFrameInjectionEnabled;
         public static int CallStackEntriesToReport = Settings.Default.StackEntriesReportedCount;
         public static string InjectStackTrace(DbConnection dbConnection, string sqlCommand, CommandType commandType)
         {
-            if (!SqlCommandProcessor.Enabled || commandType != CommandType.Text || sqlCommand.StartsWith("/*-*/"))
+            if (!SqlCommandProcessor.Enabled || commandType != CommandType.Text || sqlCommand.StartsWith(WasProcessedIndicator))
                 return sqlCommand;
             try
             {
@@ -52,7 +53,7 @@ namespace Ascentis.Infrastructure
                     hashText = $"/*AHSH={hash}*/ ";
                 }
 
-                return $"/*-*/{hashText}{sqlCommand}{stackTraceText}";
+                return $"{WasProcessedIndicator}{hashText}{sqlCommand}{stackTraceText}";
             }
             catch (Exception e)
             {
@@ -64,18 +65,18 @@ namespace Ascentis.Infrastructure
 
         public static void AddSqlCommandToDictionary(SqlCommand cmd, string cmdText)
         {
-            _originalSqlCommand.TryAdd(cmd, cmdText);
+            OriginalSqlCommand.TryAdd(cmd, cmdText);
         }
 
         public static void RemoveSqlCommandFromDictionary(SqlCommand cmd)
         {
             // ReSharper disable once UnusedVariable
-            _originalSqlCommand.TryRemove(cmd, out var cmdText);
+            OriginalSqlCommand.TryRemove(cmd, out var cmdText);
         }
 
         public static bool GetOriginalSqlCommandFromDictionary(SqlCommand cmd, out string sql)
         {
-            return _originalSqlCommand.TryGetValue(cmd, out sql);
+            return OriginalSqlCommand.TryGetValue(cmd, out sql);
         }
     }
 }
