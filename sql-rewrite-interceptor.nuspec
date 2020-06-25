@@ -2,11 +2,11 @@
 <package >
   <metadata>
     <id>Ascentis.SQLRewriteInterceptor</id>
-    <version>1.3.2.0</version>
+    <version>1.3.2.1</version>
     <authors>Jose Sebastian Battig</authors>
     <owners>Ascentis</owners>
     <license type="expression">MIT</license>
-    <projectUrl>https://github.com/Ascentis/infrastructure</projectUrl>
+    <projectUrl>https://github.com/Ascentis/sql-rewrite-interceptor</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Utility class to use with ADO.NET that allows pre-processing any SQL used vua SqlCommand class in order to allow optimization/hinting in production environments without recompiling code</description>
     <releaseNotes>First release</releaseNotes>
