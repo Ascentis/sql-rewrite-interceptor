@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text.RegularExpressions;
 using Ascentis.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SqlInterceptorsTest.Properties;
@@ -28,31 +27,24 @@ namespace SqlInterceptorsTest
         [TestMethod]
         public void TestNoRewrite()
         {
-            using (var con = new SqlConnection(Settings.Default.ConnectionString))
-            {
-                con.Open();
-                using (var cmd = new SqlCommand(Stm, con))
-                {
-                    var version = cmd.ExecuteScalar().ToString();
-                    Assert.IsTrue(version.Contains("Microsoft"));
-                }
-            }
+            using var con = new SqlConnection(Settings.Default.ConnectionString);
+            con.Open();
+            using var cmd = new SqlCommand(Stm, con);
+            var version = cmd.ExecuteScalar().ToString();
+            Assert.IsTrue(version.Contains("Microsoft"));
+
         }
 
         [TestMethod]
         public void TestSqlHeaderRewrite()
         {
             SqlCommandProcessor.Enabled = true;
-            using (var con = new SqlConnection(Settings.Default.ConnectionString))
-            {
-                con.Open();
-                using (var cmd = new SqlCommand(Stm, con))
-                {
-                    // ReSharper disable once UnusedVariable
-                    var version = cmd.ExecuteScalar().ToString();
-                    Assert.IsTrue(cmd.CommandText.Contains("/*AHSH=3316229661*/"));
-                }
-            }
+            using var con = new SqlConnection(Settings.Default.ConnectionString);
+            con.Open();
+            using var cmd = new SqlCommand(Stm, con);
+            // ReSharper disable once UnusedVariable
+            var version = cmd.ExecuteScalar().ToString();
+            Assert.IsTrue(cmd.CommandText.Contains("/*AHSH=3316229661*/"));
         }
 
         [TestMethod]
@@ -64,26 +56,19 @@ namespace SqlInterceptorsTest
             rules[0].DatabaseRegEx = ".*";
             rules[0].QueryMatchRegEx = $"(.*){Stm}(.*)";
             rules[0].QueryReplacementString = $"$1SELECT GETDATE()$2\r\n{SqlCommandRegExProcessor.RegReplacementIndicator}";
-            // rules[0].RegExOptions = RegexOptions.Singleline;
             SqlCommandRegExProcessor.SqlRewriteRules = rules;
-            using (var con = new SqlConnection(Settings.Default.ConnectionString))
-            {
-                con.Open();
-                using (var cmd = new SqlCommand(Stm, con))
-                {
-                    Assert.IsTrue(cmd.CommandText.EndsWith(SqlCommandRegExProcessor.RegReplacementIndicator), $"SQL should end with {SqlCommandRegExProcessor.RegReplacementIndicator}");
-                    var version = cmd.ExecuteScalar().ToString();
-                    Assert.IsFalse(version.Contains("Microsoft"));
-                }
-            }
+            using var con = new SqlConnection(Settings.Default.ConnectionString);
+            con.Open();
+            using var cmd = new SqlCommand(Stm, con);
+            Assert.IsTrue(cmd.CommandText.EndsWith(SqlCommandRegExProcessor.RegReplacementIndicator), $"SQL should end with {SqlCommandRegExProcessor.RegReplacementIndicator}");
+            var version = cmd.ExecuteScalar().ToString();
+            Assert.IsFalse(version.Contains("Microsoft"));
         }
 
         [TestMethod]
         public void TestStoredProcRewrite()
         {
             SqlCommandProcessor.Enabled = true;
-            //SqlCommandTextStackTraceInjector.HashInjectionEnabled = false;
-            //SqlCommandTextStackTraceInjector.StackInjectionEnabled = false;
             var rules = new SqlRewriteRule[1];
             rules[0] = new SqlRewriteRule
             {
@@ -92,23 +77,19 @@ namespace SqlInterceptorsTest
                 QueryReplacementString = "sp_getsqlqueueversion"
             };
             SqlCommandRegExProcessor.SqlRewriteRules = rules;
-            using (var con = new SqlConnection(Settings.Default.ConnectionString))
+            using var con = new SqlConnection(Settings.Default.ConnectionString);
+            con.Open();
+            using var cmd = new SqlCommand(Stm, con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            try
             {
-                con.Open();
-                using (var cmd = new SqlCommand(Stm, con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    try
-                    {
-                        cmd.ExecuteScalar();
-                        throw new Exception("Expecting exception missing parameter executing stored proc");
-                    }
-                    catch (SqlException e)
-                    {
-                        if (!e.Message.Contains("parameter"))
-                            throw;
-                    }
-                }
+                cmd.ExecuteScalar();
+                throw new Exception("Expecting exception missing parameter executing stored proc");
+            }
+            catch (SqlException e)
+            {
+                if (!e.Message.Contains("parameter"))
+                    throw;
             }
         }
 
@@ -123,15 +104,11 @@ namespace SqlInterceptorsTest
                 rules[0].DatabaseRegEx = ".(*"; // Bad regex
             });
             SqlCommandRegExProcessor.SqlRewriteRules = rules;
-            using (var con = new SqlConnection(Settings.Default.ConnectionString))
-            {
-                con.Open();
-                using (var cmd = new SqlCommand(Stm, con))
-                {
-                    var version = cmd.ExecuteScalar().ToString();
-                    Assert.IsTrue(version.Contains("Microsoft"));
-                }
-            }
+            using var con = new SqlConnection(Settings.Default.ConnectionString);
+            con.Open();
+            using var cmd = new SqlCommand(Stm, con);
+            var version = cmd.ExecuteScalar().ToString();
+            Assert.IsTrue(version.Contains("Microsoft"));
         }
     }
 }

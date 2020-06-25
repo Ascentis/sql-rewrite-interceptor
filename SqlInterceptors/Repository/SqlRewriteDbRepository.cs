@@ -25,18 +25,15 @@ namespace Ascentis.Infrastructure
 
         private void EnsureSqlRewriteSchema()
         {
-            using (var checkTblExists =
-                new SqlCommand("SELECT OBJECT_ID (N'SqlRewriteRegistry', N'U') obj_id", _sqlConnection))
-            {
-                var registryId = checkTblExists.ExecuteScalar();
-                if (registryId == null || registryId is DBNull)
-                    TryCreateSqlRewriteSchema();
-            }
+            using var checkTblExists = new SqlCommand("SELECT OBJECT_ID (N'SqlRewriteRegistry', N'U') obj_id", _sqlConnection);
+            var registryId = checkTblExists.ExecuteScalar();
+            if (registryId == null || registryId is DBNull)
+                TryCreateSqlRewriteSchema();
         }
 
         private void TryCreateSqlRewriteSchema()
         {
-            using (var createSqlRewriteRegistryTable = new SqlCommand(@"
+            using var createSqlRewriteRegistryTable = new SqlCommand(@"
                 CREATE TABLE [SqlRewriteRegistry](
                     [ID] [int] IDENTITY(1,1) NOT NULL,
                     [DatabaseRegEx] [nvarchar](255) NOT NULL,
@@ -66,23 +63,21 @@ namespace Ascentis.Infrastructure
                 ALTER TABLE [dbo].[SqlRewriteInjectorSettings] ADD  CONSTRAINT [DF_SqlRewriteInjectorSettings_HashInjectionEnabled]  DEFAULT ((1)) FOR [HashInjectionEnabled];
                 ALTER TABLE [dbo].[SqlRewriteInjectorSettings] ADD  CONSTRAINT [DF_SqlRewriteInjectorSettings_RegExInjectionEnabled]  DEFAULT ((0)) FOR [RegExInjectionEnabled];
                 ALTER TABLE [dbo].[SqlRewriteInjectorSettings] ADD  CONSTRAINT [DF_SqlRewriteInjectorSettings_StackFrameInjectionEnabled]  DEFAULT ((0)) FOR [StackFrameInjectionEnabled];
-                ALTER TABLE [dbo].[SqlRewriteInjectorSettings] ADD  CONSTRAINT [DF_SqlRewriteInjectorSettings_CallStackEntriesToReport]  DEFAULT ((10)) FOR [CallStackEntriesToReport];", _sqlConnection))
+                ALTER TABLE [dbo].[SqlRewriteInjectorSettings] ADD  CONSTRAINT [DF_SqlRewriteInjectorSettings_CallStackEntriesToReport]  DEFAULT ((10)) FOR [CallStackEntriesToReport];", _sqlConnection);
+            try
             {
-                try
-                {
-                    createSqlRewriteRegistryTable.ExecuteNonQuery();
-                }
-                catch (SqlException e)
-                {
-                    if (!e.Message.Contains("There is already an object"))
-                        throw;
-                }
+                createSqlRewriteRegistryTable.ExecuteNonQuery();
+            }
+            catch (SqlException e)
+            {
+                if (!e.Message.Contains("There is already an object"))
+                    throw;
             }
         }
 
         public void SaveSqlRewriteRule(SqlRewriteRule rule)
         {
-            using (var saveSqlRewriteRule = new SqlCommand(@"
+            using var saveSqlRewriteRule = new SqlCommand(@"
                 MERGE SqlRewriteRegistry AS t
                 USING (
                     SELECT @ID, @DatabaseRegEx, @QueryMatchRegEx, @QueryReplacementString, @RegExOptions
@@ -97,64 +92,57 @@ namespace Ascentis.Infrastructure
                 WHEN NOT MATCHED THEN
                     INSERT (DatabaseRegEx, QueryMatchRegEx, QueryReplacementString, RegExOptions)
                     VALUES (src.DatabaseRegEx, src.QueryMatchRegEx, src.QueryReplacementString, src.RegExOptions)
-                OUTPUT Inserted.ID;", _sqlConnection))
+                OUTPUT Inserted.ID;", _sqlConnection);
+            saveSqlRewriteRule.Parameters.AddRange(new[]
             {
-                saveSqlRewriteRule.Parameters.AddRange(new[]
-                {
-                    new SqlParameter("@ID", rule.Id),
-                    new SqlParameter("@DatabaseRegEx", rule.DatabaseRegEx),
-                    new SqlParameter("@QueryMatchRegEx", rule.QueryMatchRegEx),
-                    new SqlParameter("@QueryReplacementString", rule.QueryReplacementString),
-                    new SqlParameter("@RegExOptions", rule.RegExOptions)
-                });
-                var result = saveSqlRewriteRule.ExecuteScalar();
-                if (result is DBNull)
-                    throw new SqlRewriteRuleDbRepositoryException("Call to saveSqlRewriteRule.ExecuteScalar() should always return a non-null value");
-                rule.Id = (int) result;
-            }
+                new SqlParameter("@ID", rule.Id),
+                new SqlParameter("@DatabaseRegEx", rule.DatabaseRegEx),
+                new SqlParameter("@QueryMatchRegEx", rule.QueryMatchRegEx),
+                new SqlParameter("@QueryReplacementString", rule.QueryReplacementString),
+                new SqlParameter("@RegExOptions", rule.RegExOptions)
+            });
+            var result = saveSqlRewriteRule.ExecuteScalar();
+            if (result is DBNull)
+                throw new SqlRewriteRuleDbRepositoryException("Call to saveSqlRewriteRule.ExecuteScalar() should always return a non-null value");
+            rule.Id = (int) result;
         }
 
         public void RemoveSqlRewriteRule(int id)
         {
-            using (var deleteSqlRewriteRule = new SqlCommand(@"
+            using var deleteSqlRewriteRule = new SqlCommand(@"
                 DELETE FROM SqlRewriteRegistry
-                WHERE ID = @ID", _sqlConnection))
-            {
-                deleteSqlRewriteRule.Parameters.AddWithValue("@ID", id);
-                if(deleteSqlRewriteRule.ExecuteNonQuery() != 1)
-                    throw new SqlRewriteRuleDbRepositoryException("No sql rewrite entry was found to remove");
-            }
+                WHERE ID = @ID", _sqlConnection);
+            deleteSqlRewriteRule.Parameters.AddWithValue("@ID", id);
+            if(deleteSqlRewriteRule.ExecuteNonQuery() != 1)
+                throw new SqlRewriteRuleDbRepositoryException("No sql rewrite entry was found to remove");
         }
 
         public IEnumerable<SqlRewriteRule> LoadSqlRewriteRules()
         {
             var result = new List<SqlRewriteRule>();
-            using (var loadSqlRewriteRules = new SqlCommand(@"
+            using var loadSqlRewriteRules = new SqlCommand(@"
                 SELECT ID, DatabaseRegEx, QueryMatchRegEx, QueryReplacementString, RegExOptions
-                FROM SqlRewriteRegistry", _sqlConnection))
+                FROM SqlRewriteRegistry", _sqlConnection);
+            using var resultSet = loadSqlRewriteRules.ExecuteReader();
+            while (resultSet.Read())
             {
-                using (var resultSet = loadSqlRewriteRules.ExecuteReader())
+                var item = new SqlRewriteRule
                 {
-                    while (resultSet.Read())
-                    {
-                        var item = new SqlRewriteRule
-                        {
-                            Id = (int) resultSet[0],
-                            DatabaseRegEx = (string) resultSet[1],
-                            QueryMatchRegEx = (string) resultSet[2],
-                            QueryReplacementString = (string) resultSet[3],
-                            RegExOptions = (RegexOptions) resultSet[4]
-                        };
-                        result.Add(item);
-                    }
-                }
+                    Id = (int) resultSet[0],
+                    DatabaseRegEx = (string) resultSet[1],
+                    QueryMatchRegEx = (string) resultSet[2],
+                    QueryReplacementString = (string) resultSet[3],
+                    RegExOptions = (RegexOptions) resultSet[4]
+                };
+                result.Add(item);
             }
+
             return result;
         }
 
         public void SaveSqlRewriteSettings(SqlRewriteSettings settings)
         {
-            using (var saveSqlRewriteSettings = new SqlCommand(@"
+            using var saveSqlRewriteSettings = new SqlCommand(@"
                 MERGE SqlRewriteInjectorSettings AS t
                 USING (
                     SELECT @ID, @MachineRegEx, @ProcessNameRegEx, @Enabled, @HashInjectionEnabled, @RegExInjectionEnabled, @StackFrameInjectionEnabled, @CallStackEntriesToReport
@@ -172,74 +160,64 @@ namespace Ascentis.Infrastructure
                 WHEN NOT MATCHED THEN
                     INSERT (MachineRegEx, ProcessNameRegEx, Enabled, HashInjectionEnabled, RegExInjectionEnabled, StackFrameInjectionEnabled, CallStackEntriesToReport)
                     VALUES (src.MachineRegEx, src.ProcessNameRegEx, src.Enabled, src.HashInjectionEnabled, src.RegExInjectionEnabled, src.StackFrameInjectionEnabled, src.CallStackEntriesToReport)
-                OUTPUT Inserted.ID;", _sqlConnection))
+                OUTPUT Inserted.ID;", _sqlConnection);
+            saveSqlRewriteSettings.Parameters.AddRange(new[]
             {
-                saveSqlRewriteSettings.Parameters.AddRange(new[]
-                {
-                    new SqlParameter("@ID", settings.Id),
-                    new SqlParameter("@MachineRegEx", settings.MachineRegEx),
-                    new SqlParameter("@ProcessNameRegEx", settings.ProcessNameRegEx),
-                    new SqlParameter("@Enabled", settings.Enabled ? 1 : 0),
-                    new SqlParameter("@HashInjectionEnabled", settings.HashInjectionEnabled ? 1 : 0),
-                    new SqlParameter("@StackFrameInjectionEnabled", settings.StackFrameInjectionEnabled ? 1 : 0),
-                    new SqlParameter("@RegExInjectionEnabled", settings.RegExInjectionEnabled ? 1 : 0),
-                    new SqlParameter("@CallStackEntriesToReport", settings.CallStackEntriesToReport), 
-                });
-                var result = saveSqlRewriteSettings.ExecuteScalar();
-                if (result is DBNull)
-                    throw new SqlRewriteRuleDbRepositoryException("Call to saveSqlRewriteSettings.ExecuteScalar() should always return a non-null value");
-                settings.Id = (int)result;
-            }
+                new SqlParameter("@ID", settings.Id),
+                new SqlParameter("@MachineRegEx", settings.MachineRegEx),
+                new SqlParameter("@ProcessNameRegEx", settings.ProcessNameRegEx),
+                new SqlParameter("@Enabled", settings.Enabled ? 1 : 0),
+                new SqlParameter("@HashInjectionEnabled", settings.HashInjectionEnabled ? 1 : 0),
+                new SqlParameter("@StackFrameInjectionEnabled", settings.StackFrameInjectionEnabled ? 1 : 0),
+                new SqlParameter("@RegExInjectionEnabled", settings.RegExInjectionEnabled ? 1 : 0),
+                new SqlParameter("@CallStackEntriesToReport", settings.CallStackEntriesToReport), 
+            });
+            var result = saveSqlRewriteSettings.ExecuteScalar();
+            if (result is DBNull)
+                throw new SqlRewriteRuleDbRepositoryException("Call to saveSqlRewriteSettings.ExecuteScalar() should always return a non-null value");
+            settings.Id = (int)result;
         }
 
         public IEnumerable<SqlRewriteSettings> LoadSqlRewriteSettings()
         {
             var result = new List<SqlRewriteSettings>();
-            using (var loadSqlRewriteSettings = new SqlCommand(@"
+            using var loadSqlRewriteSettings = new SqlCommand(@"
                 SELECT ID, MachineRegEx, ProcessNameRegEx, Enabled, HashInjectionEnabled, RegExInjectionEnabled, StackFrameInjectionEnabled, CallStackEntriesToReport
-                FROM SqlRewriteInjectorSettings", _sqlConnection))
+                FROM SqlRewriteInjectorSettings", _sqlConnection);
+            using var resultSet = loadSqlRewriteSettings.ExecuteReader();
+            while (resultSet.Read())
             {
-                using (var resultSet = loadSqlRewriteSettings.ExecuteReader())
+                var item = new SqlRewriteSettings
                 {
-                    while (resultSet.Read())
-                    {
-                        var item = new SqlRewriteSettings
-                        {
-                            Id = (int)resultSet[0],
-                            MachineRegEx = (string)resultSet[1],
-                            ProcessNameRegEx = (string)resultSet[2],
-                            Enabled = (bool)resultSet[3],
-                            HashInjectionEnabled = (bool)resultSet[4],
-                            RegExInjectionEnabled = (bool)resultSet[5],
-                            StackFrameInjectionEnabled = (bool)resultSet[6],
-                            CallStackEntriesToReport = (int)resultSet[7]
-                        };
-                        result.Add(item);
-                    }
-                }
+                    Id = (int)resultSet[0],
+                    MachineRegEx = (string)resultSet[1],
+                    ProcessNameRegEx = (string)resultSet[2],
+                    Enabled = (bool)resultSet[3],
+                    HashInjectionEnabled = (bool)resultSet[4],
+                    RegExInjectionEnabled = (bool)resultSet[5],
+                    StackFrameInjectionEnabled = (bool)resultSet[6],
+                    CallStackEntriesToReport = (int)resultSet[7]
+                };
+                result.Add(item);
             }
+
             return result;
         }
 
         public void RemoveSqlRewriteSettings(int id)
         {
-            using (var deleteSqlRewriteRule = new SqlCommand(@"
+            using var deleteSqlRewriteRule = new SqlCommand(@"
                 DELETE FROM SqlRewriteInjectorSettings
-                WHERE ID = @ID", _sqlConnection))
-            {
-                deleteSqlRewriteRule.Parameters.AddWithValue("@ID", id);
-                if (deleteSqlRewriteRule.ExecuteNonQuery() != 1)
-                    throw new SqlRewriteRuleDbRepositoryException("No settings entry was found to remove");
-            }
+                WHERE ID = @ID", _sqlConnection);
+            deleteSqlRewriteRule.Parameters.AddWithValue("@ID", id);
+            if (deleteSqlRewriteRule.ExecuteNonQuery() != 1)
+                throw new SqlRewriteRuleDbRepositoryException("No settings entry was found to remove");
         }
 
         public void RemoveAllSqlRewriteSettings()
         {
-            using (var truncateSqlRewriteInjectorSettings =
-                new SqlCommand("TRUNCATE TABLE SqlRewriteInjectorSettings", _sqlConnection))
-            {
-                truncateSqlRewriteInjectorSettings.ExecuteNonQuery();
-            }
+            using var truncateSqlRewriteInjectorSettings = new SqlCommand("TRUNCATE TABLE SqlRewriteInjectorSettings", _sqlConnection);
+            truncateSqlRewriteInjectorSettings.ExecuteNonQuery();
         }
 
         public bool IsThreadSafe()

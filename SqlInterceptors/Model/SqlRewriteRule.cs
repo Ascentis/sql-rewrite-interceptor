@@ -19,14 +19,22 @@ namespace Ascentis.Infrastructure
             {
                 if (_regexOptions == value)
                     return;
-                var oldRegExPattern = QueryMatchRegEx;
-                var oldDbRegExPattern = DatabaseRegEx;
-                QueryMatchRegEx = "";
-                DatabaseRegEx = "";
                 _regexOptions = value;
-                DatabaseRegEx = oldDbRegExPattern;
-                QueryMatchRegEx = oldRegExPattern;
+                RecompileRegExes();
             }
+        }
+
+        private void RebuildRegEx(ref Regex regex, ref string patternField)
+        {
+            var oldPattern = patternField;
+            patternField = "";
+            SetRegExProperty(oldPattern, ref patternField, ref regex);
+        }
+
+        private void RecompileRegExes()
+        {
+            RebuildRegEx(ref _databaseRegex, ref _databaseRegExPattern);
+            RebuildRegEx(ref _queryMatchRegEx, ref _queryMatchRegExPattern);
         }
 
         protected override Regex BuildRegEx(string pattern, RegexOptions regexOptions)

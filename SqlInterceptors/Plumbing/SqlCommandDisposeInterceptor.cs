@@ -1,5 +1,7 @@
 ﻿using System.Data.SqlClient;
 using HarmonyLib;
+// ReSharper disable UnusedMember.Local
+// ReSharper disable InconsistentNaming
 
 namespace Ascentis.Infrastructure
 {

@@ -21,43 +21,33 @@ namespace SqlInterceptorsTest
         [TestMethod]
         public void TestPerformanceImpact()
         {
-            using (var repo = new SqlRewriteDbRepository(Settings.Default.ConnectionString))
+            using var repo = new SqlRewriteDbRepository(Settings.Default.ConnectionString);
+            using var service = new SqlRewriteRuleService(repo, true);
+            using var conn = new SqlConnection(Settings.Default.ConnectionString);
+            conn.Open();
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            Assert.AreNotEqual(0, service.AddRule(".*", Stm, "SELECT GETDATE()"));
+            service.RefreshRulesFromRepository();
+            for (var i = 0; i < 10000; i++)
             {
-                using (var service = new SqlRewriteRuleService(repo, true))
-                {
-                    using (var conn = new SqlConnection(Settings.Default.ConnectionString))
-                    {
-                        conn.Open();
-                        var stopWatch = new Stopwatch();
-                        stopWatch.Start();
-                        Assert.AreNotEqual(0, service.AddRule(".*", Stm, "SELECT GETDATE()"));
-                        service.RefreshRulesFromRepository();
-                        for (var i = 0; i < 10000; i++)
-                        {
-                            using (var cmd = new SqlCommand(Stm, conn))
-                            {
-                                var version = cmd.ExecuteScalar().ToString();
-                                Assert.IsNotNull(version.Contains("Microsoft"));
-                            }
-                        }
-                        stopWatch.Stop();
-                        var intervalFullInjection = stopWatch.Elapsed;
-                        stopWatch.Reset();
-                        stopWatch.Start();
-                        service.Enabled = false;
-                        for (var i = 0; i < 10000; i++)
-                        {
-                            using (var cmd = new SqlCommand(Stm, conn))
-                            {
-                                var version = cmd.ExecuteScalar().ToString();
-                                Assert.IsNotNull(version.Contains("Microsoft"));
-                            }
-                        }
-                        stopWatch.Stop();
-                        Assert.IsTrue(Math.Abs(intervalFullInjection.TotalMilliseconds / stopWatch.Elapsed.TotalMilliseconds) < 3, $"{intervalFullInjection.TotalMilliseconds} vs {stopWatch.Elapsed.TotalMilliseconds}");
-                    }
-                }
+                using var cmd = new SqlCommand(Stm, conn);
+                var version = cmd.ExecuteScalar().ToString();
+                Assert.IsNotNull(version.Contains("Microsoft"));
             }
+            stopWatch.Stop();
+            var intervalFullInjection = stopWatch.Elapsed;
+            stopWatch.Reset();
+            stopWatch.Start();
+            service.Enabled = false;
+            for (var i = 0; i < 10000; i++)
+            {
+                using var cmd = new SqlCommand(Stm, conn);
+                var version = cmd.ExecuteScalar().ToString();
+                Assert.IsNotNull(version.Contains("Microsoft"));
+            }
+            stopWatch.Stop();
+            Assert.IsTrue(Math.Abs(intervalFullInjection.TotalMilliseconds / stopWatch.Elapsed.TotalMilliseconds) < 3, $"{intervalFullInjection.TotalMilliseconds} vs {stopWatch.Elapsed.TotalMilliseconds}");
         }
     }
 }
