@@ -39,37 +39,33 @@ CREATE TABLE [dbo].[SqlRewriteInjectorSettings](
     [RegExInjectionEnabled] [bit] NOT NULL,	-- Controls if RegEx injection is performed
     [StackFrameInjectionEnabled] [bit] NOT NULL,	-- Controls if stack frame injection is performed
     [CallStackEntriesToReport] [int] NOT NULL	-- Controls how many stack entries are going to be captured and injected
-	CONSTRAINT [PK_SqlRewriteInjectorSettings] PRIMARY KEY CLUSTERED 
+    CONSTRAINT [PK_SqlRewriteInjectorSettings] PRIMARY KEY CLUSTERED 
     (
-	     [Id] ASC
+        [Id] ASC
     )
 )
 ```
 ## RegEx options
 
 ### IgnoreCase = 1, 
-Specifies case-insensitive matching. For more information, see the "Case-Insensitive Matching " section in the Regular Expression Options topic.
-IMPORTANT: IgnoreCase always on for RegEx applied to settings
+Specifies case-insensitive matching.
+##### IMPORTANT: IgnoreCase always on for RegEx applied to settings
 
 ### Multiline = 2,    
 Multiline mode. Changes the meaning of ^ and $ so they match at the beginning and end, respectively, of any line, and not just the beginning and end of the entire string.
 
 ### ExplicitCapture = 4,    
-Specifies that the only valid captures are explicitly named or numbered groups of the form (?<;name>;…). This allows unnamed parentheses to act as noncapturing groups without the syntactic clumsiness of the expression (?:…).
-
-### Compiled = 8,
-Specifies that the regular expression is compiled to an assembly. This yields faster execution but increases startup time.  
-IMPORTANT: Compiled ALWAYS on. Can't be shut off
+Specifies that the only valid captures are explicitly named or numbered groups of the form (?\<name>...). This allows unnamed parentheses to act as noncapturing groups without the syntactic clumsiness of the expression (?:…).
 
 ### Singleline = 16, // 0x00000010
 Specifies single-line mode. Changes the meaning of the dot (.) so it matches every character (instead of every character except \n).
-IMPORTANT: Singleline always on for regex applied to queries
+##### IMPORTANT: Singleline always on for regex applied to queries
 
 ### IgnorePatternWhitespace = 32, // 0x00000020
-Eliminates unescaped white space from the pattern and enables comments marked with #. However, this value does not affect or eliminate white space in , numeric , or tokens that mark the beginning of individual .
+Eliminates unescaped white space from the pattern and enables comments marked with #. However, this value does not affect or eliminate white space in character classes, numeric quantifiers, or tokens that mark the beginning of individual regular expression language elements.
 
 ### RightToLeft = 64, // 0x00000040 
-Specifies that the search will be from right to left instead of from left to right. For more information, see the "Right-to-Left Mode" section in the Regular Expression Options topic.
+Specifies that the search will be from right to left instead of from left to right.
 
 ### ECMAScript = 256, // 0x00000100    
 Enables ECMAScript-compliant behavior for the expression. 
@@ -79,7 +75,7 @@ Specifies that cultural differences in language is ignored.
 
 ## Remarks
 
-When doing regex replacements, it's recommended to append at the end of the entire string the following text: /*x*/
+When doing regex replacements, it's recommended to append at the end of the entire string the following text: /\*x*/
 When the regex processor detects that string, it will more efficiently cut processing without having the compare the entire result
 from the call to regex replacement and the old string before deciding to stop trying patterns.
 
