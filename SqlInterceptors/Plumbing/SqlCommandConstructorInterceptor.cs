@@ -5,7 +5,7 @@ using HarmonyLib;
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedParameter.Local
 
-namespace Ascentis.Infrastructure
+namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
 {
     [HarmonyPatch(typeof(SqlCommand), MethodType.Constructor)]
     [HarmonyPatch(new[] { typeof(string), typeof(SqlConnection) })]

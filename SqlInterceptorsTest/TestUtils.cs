@@ -1,5 +1,5 @@
 ﻿using System.Data.SqlClient;
-using Ascentis.Infrastructure;
+using Ascentis.Infrastructure.SqlInterceptors.Plumbing;
 using SqlInterceptorsTest.Properties;
 
 namespace SqlInterceptorsTest

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
+using Ascentis.Infrastructure.SqlInterceptors.Model;
+using Ascentis.Infrastructure.SqlInterceptors.Repository;
 
-namespace Ascentis.Infrastructure
+namespace Ascentis.Infrastructure.DBRepository
 {
     public class SqlRewriteDbRepository : IDisposable, ISqlRewriteRepository
     {

@@ -5,9 +5,9 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Reflection;
-using Ascentis.Infrastructure.Properties;
+using Ascentis.Infrastructure.SqlInterceptors.Properties;
 
-namespace Ascentis.Infrastructure
+namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
 {
     public class SqlCommandTextStackTraceInjector
     {
@@ -16,8 +16,10 @@ namespace Ascentis.Infrastructure
         public static bool HashInjectionEnabled = Settings.Default.HashInjectionEnabled;
         public static bool StackInjectionEnabled = Settings.Default.StackFrameInjectionEnabled;
         public static int CallStackEntriesToReport = Settings.Default.StackEntriesReportedCount;
-        public static string InjectStackTrace(DbConnection dbConnection, string sqlCommand, CommandType commandType)
+        public static string InjectStackTrace(DbConnection dbConnection, SqlCommand sqlCmd, string sqlCommand, CommandType commandType)
         {
+            if (SqlCommandProcessor.Enabled && (HashInjectionEnabled || StackInjectionEnabled))
+                AddSqlCommandToDictionary(sqlCmd, sqlCommand);
             if (!SqlCommandProcessor.Enabled || commandType != CommandType.Text || sqlCommand.StartsWith(WasProcessedIndicator))
                 return sqlCommand;
             try

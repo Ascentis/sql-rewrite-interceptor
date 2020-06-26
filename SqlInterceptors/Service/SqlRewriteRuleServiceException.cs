@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ascentis.Infrastructure
+namespace Ascentis.Infrastructure.SqlInterceptors
 {
     public class SqlRewriteRuleServiceException : Exception
     {

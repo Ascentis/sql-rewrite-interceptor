@@ -3,7 +3,7 @@ using HarmonyLib;
 // ReSharper disable UnusedMember.Local
 // ReSharper disable InconsistentNaming
 
-namespace Ascentis.Infrastructure
+namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
 {
     [HarmonyPatch(typeof(SqlCommand))]
     [HarmonyPatch("CommandText", MethodType.Setter)]

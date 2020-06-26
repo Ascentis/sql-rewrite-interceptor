@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Ascentis.Infrastructure.SqlInterceptors.Injectors;
+using Ascentis.Infrastructure.SqlInterceptors.Model;
+using Ascentis.Infrastructure.SqlInterceptors.Plumbing;
+using Ascentis.Infrastructure.SqlInterceptors.Repository;
 
-namespace Ascentis.Infrastructure
+namespace Ascentis.Infrastructure.SqlInterceptors
 {
     public class SqlRewriteRuleService : IDisposable
     {

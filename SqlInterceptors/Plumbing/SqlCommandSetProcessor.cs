@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Data.SqlClient;
+using Ascentis.Infrastructure.SqlInterceptors.Injectors;
+
 // ReSharper disable InconsistentNaming
 
-namespace Ascentis.Infrastructure
+namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
 {
     public class SqlCommandSetProcessor
     {
@@ -11,15 +13,10 @@ namespace Ascentis.Infrastructure
             var replacedCmdText = cmdText;
             try
             {
-                if (SqlCommandInterceptor.SqlCommandSetEvent == null)
+                if (SqlCommandInterceptor.SqlCommandProcessorEvent == null)
                     return replacedCmdText;
-                if (SqlCommandTextStackTraceInjector.HashInjectionEnabled || SqlCommandTextStackTraceInjector.StackInjectionEnabled)
-                    SqlCommandTextStackTraceInjector.AddSqlCommandToDictionary(__instance, cmdText);
-                foreach (var chainedSqlCommandDelegate in SqlCommandInterceptor.SqlCommandSetEvent.GetInvocationList())
-                {
-                    replacedCmdText = (string) chainedSqlCommandDelegate.DynamicInvoke(__instance.Connection, replacedCmdText, __instance.CommandType);
-                }
-
+                foreach (var chainedSqlCommandDelegate in SqlCommandInterceptor.SqlCommandProcessorEvent.GetInvocationList())
+                    replacedCmdText = (string) chainedSqlCommandDelegate.DynamicInvoke(__instance.Connection, __instance, replacedCmdText, __instance.CommandType);
                 return replacedCmdText;
             }
             catch (Exception e)

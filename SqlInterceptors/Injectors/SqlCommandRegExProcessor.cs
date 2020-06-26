@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using Ascentis.Infrastructure.Properties;
+using System.Data.SqlClient;
+using Ascentis.Infrastructure.SqlInterceptors.Model;
+using Ascentis.Infrastructure.SqlInterceptors.Properties;
 
-namespace Ascentis.Infrastructure
+namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
 {
     public class SqlCommandRegExProcessor
     {
@@ -22,7 +24,7 @@ namespace Ascentis.Infrastructure
             }
         }
 
-        public static string ProcessSqlForRegExReplacement(DbConnection dbConnection, string sqlCommand, CommandType commandType)
+        public static string ProcessSqlForRegExReplacement(DbConnection dbConnection, SqlCommand sqlCmd, string sqlCommand, CommandType commandType)
         {
             if (!RegExInjectionEnabled || !SqlCommandProcessor.Enabled || dbConnection == null || sqlCommand.EndsWith(RegReplacementIndicator))
                 return sqlCommand;

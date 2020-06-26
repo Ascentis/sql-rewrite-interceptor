@@ -1,5 +1,5 @@
 ﻿
-namespace Ascentis.Infrastructure
+namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
 {
     public class SqlCommandProcessor
     {

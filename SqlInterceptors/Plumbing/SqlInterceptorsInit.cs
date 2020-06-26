@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 
-namespace Ascentis.Infrastructure
+namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
 {
     public class SqlInterceptorsInit
     {

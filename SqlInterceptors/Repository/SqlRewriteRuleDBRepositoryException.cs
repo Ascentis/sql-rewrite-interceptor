@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ascentis.Infrastructure
+namespace Ascentis.Infrastructure.DBRepository
 {
     public class SqlRewriteRuleDbRepositoryException : Exception
     {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Ascentis.Infrastructure.SqlInterceptors.Model;
 
-namespace Ascentis.Infrastructure
+namespace Ascentis.Infrastructure.SqlInterceptors.Repository
 {
     public interface ISqlRewriteRepository
     {

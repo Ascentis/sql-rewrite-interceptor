@@ -1,4 +1,4 @@
-﻿using Ascentis.Infrastructure;
+﻿using Ascentis.Infrastructure.SqlInterceptors.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SqlInterceptorsTest.Properties;
 

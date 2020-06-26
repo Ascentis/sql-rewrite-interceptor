@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-using Ascentis.Infrastructure;
+using Ascentis.Infrastructure.SqlInterceptors.Injectors;
+using Ascentis.Infrastructure.SqlInterceptors.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SqlInterceptorsTest.Properties;
 
