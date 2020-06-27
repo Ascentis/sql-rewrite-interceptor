@@ -16,7 +16,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
                 if (SqlCommandInterceptor.SqlCommandProcessorEvent == null)
                     return replacedCmdText;
                 foreach (var chainedSqlCommandDelegate in SqlCommandInterceptor.SqlCommandProcessorEvent.GetInvocationList())
-                    replacedCmdText = (string) chainedSqlCommandDelegate.DynamicInvoke(__instance.Connection, __instance, replacedCmdText, __instance.CommandType);
+                    replacedCmdText = ((SqlCommandInterceptor.SqlCommandProcessorDelegate)chainedSqlCommandDelegate)(__instance.Connection, __instance, replacedCmdText, __instance.CommandType);
                 return replacedCmdText;
             }
             catch (Exception e)

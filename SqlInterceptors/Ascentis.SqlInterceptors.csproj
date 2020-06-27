@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>latest</LangVersion>
@@ -45,10 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\SqlRewriteModelBase.cs" />
     <Compile Include="Model\SqlRewriteSettings.cs" />
     <Compile Include="Plumbing\RegisterSqlCommandInjectors.cs" />
-    <Compile Include="Injectors\SqlCommandProcessor.cs" />
     <Compile Include="Injectors\SqlCommandRegExProcessor.cs" />
     <Compile Include="Injectors\SqlCommandTextStackTraceInjector.cs" />
     <Compile Include="Model\SqlRewriteRule.cs" />
@@ -70,6 +68,7 @@
     <Compile Include="Repository\SqlRewriteRuleDBRepositoryException.cs" />
     <Compile Include="Service\SqlRewriteRuleService.cs" />
     <Compile Include="Service\SqlRewriteRuleServiceException.cs" />
+    <Compile Include="Utils\SqlInjectorRegEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

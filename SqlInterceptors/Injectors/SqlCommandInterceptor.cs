@@ -7,9 +7,10 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
 {
     public class SqlCommandInterceptor
     {
+        public static bool Enabled { get; set; }
         public delegate string SqlCommandProcessorDelegate(DbConnection dbConnection, SqlCommand sqlCmd, string value, CommandType commandType);
         public delegate void ExceptionDelegate(Exception e);
-        public static SqlCommandProcessorDelegate SqlCommandProcessorEvent;
-        public static ExceptionDelegate ExceptionDelegateEvent;
+        public static SqlCommandProcessorDelegate SqlCommandProcessorEvent { get; set; }
+        public static ExceptionDelegate ExceptionDelegateEvent { get; set; }
     }
 }

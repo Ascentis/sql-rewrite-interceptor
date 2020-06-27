@@ -26,7 +26,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
 
         public static string ProcessSqlForRegExReplacement(DbConnection dbConnection, SqlCommand sqlCmd, string sqlCommand, CommandType commandType)
         {
-            if (!RegExInjectionEnabled || !SqlCommandProcessor.Enabled || dbConnection == null || sqlCommand.EndsWith(RegReplacementIndicator))
+            if (!RegExInjectionEnabled || !SqlCommandInterceptor.Enabled || dbConnection == null || sqlCommand.EndsWith(RegReplacementIndicator))
                 return sqlCommand;
             try
             {

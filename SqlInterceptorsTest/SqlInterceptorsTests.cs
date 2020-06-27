@@ -22,7 +22,7 @@ namespace SqlInterceptorsTest
         [TestCleanup]
         public void TestCleanup()
         {
-            SqlCommandProcessor.Enabled = false;
+            SqlCommandInterceptor.Enabled = false;
         }
 
         [TestMethod]
@@ -39,7 +39,7 @@ namespace SqlInterceptorsTest
         [TestMethod]
         public void TestSqlHeaderRewrite()
         {
-            SqlCommandProcessor.Enabled = true;
+            SqlCommandInterceptor.Enabled = true;
             using var con = new SqlConnection(Settings.Default.ConnectionString);
             con.Open();
             using var cmd = new SqlCommand(Stm, con);
@@ -51,7 +51,7 @@ namespace SqlInterceptorsTest
         [TestMethod]
         public void TestCompleteRewrite()
         {
-            SqlCommandProcessor.Enabled = true;
+            SqlCommandInterceptor.Enabled = true;
             var rules = new SqlRewriteRule[1];
             rules[0] = new SqlRewriteRule();
             rules[0].DatabaseRegEx = ".*";
@@ -69,7 +69,7 @@ namespace SqlInterceptorsTest
         [TestMethod]
         public void TestStoredProcRewrite()
         {
-            SqlCommandProcessor.Enabled = true;
+            SqlCommandInterceptor.Enabled = true;
             var rules = new SqlRewriteRule[1];
             rules[0] = new SqlRewriteRule
             {
@@ -97,7 +97,7 @@ namespace SqlInterceptorsTest
         [TestMethod]
         public void TestBadRegEx()
         {
-            SqlCommandProcessor.Enabled = true;
+            SqlCommandInterceptor.Enabled = true;
             var rules = new SqlRewriteRule[1];
             rules[0] = new SqlRewriteRule();
             Assert.ThrowsException<ArgumentException>(() =>

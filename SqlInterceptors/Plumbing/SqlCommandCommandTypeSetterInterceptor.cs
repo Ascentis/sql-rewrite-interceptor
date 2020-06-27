@@ -13,7 +13,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
     {
         private static void Postfix(SqlCommand __instance, CommandType value)
         {
-            if (value != CommandType.Text && SqlCommandTextStackTraceInjector.GetOriginalSqlCommandFromDictionary(__instance, out var originalSql))
+            if (value != CommandType.Text && SqlCommandTextStackTraceInjector.TryGetOriginalSqlCommandFromDictionary(__instance, out var originalSql))
                 __instance.CommandText = originalSql;
         }
     }

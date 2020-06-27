@@ -4,10 +4,14 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
 {
     public class SqlInterceptorsInit
     {
+        private static Harmony _harmony;
+
         public static void Init()
         {
-            var harmony = new Harmony("SqlInterceptors");
-            harmony.PatchAll();
+            if (_harmony != null)
+                return;
+            _harmony = new Harmony("SqlInterceptors");
+            _harmony.PatchAll();
         }
     }
 }

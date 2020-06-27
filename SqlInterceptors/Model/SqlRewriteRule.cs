@@ -1,13 +1,13 @@
 ﻿using System.Text.RegularExpressions;
+using Ascentis.Infrastructure.SqlInterceptors.Utils;
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Model
 {
-    public class SqlRewriteRule : SqlRewriteModelBase
+    public class SqlRewriteRule
     {
-        private Regex _databaseRegex;
-        private string _databaseRegExPattern;
-        private Regex _queryMatchRegEx;
-        private string _queryMatchRegExPattern;
+        private const RegexOptions DefaultRegExOptions = RegexOptions.Compiled | RegexOptions.Singleline;
+        private readonly SqlInjectorRegEx _databaseRegex = new SqlInjectorRegEx(DefaultRegExOptions);
+        private readonly SqlInjectorRegEx _queryMatchRegEx = new SqlInjectorRegEx(DefaultRegExOptions);
 
         public int Id { get; set; }
 
@@ -23,47 +23,35 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Model
                 RecompileRegExes();
             }
         }
-
-        private void RebuildRegEx(ref Regex regex, ref string patternField)
-        {
-            var oldPattern = patternField;
-            patternField = "";
-            SetRegExProperty(oldPattern, ref patternField, ref regex);
-        }
-
+        
         private void RecompileRegExes()
         {
-            RebuildRegEx(ref _databaseRegex, ref _databaseRegExPattern);
-            RebuildRegEx(ref _queryMatchRegEx, ref _queryMatchRegExPattern);
-        }
-
-        protected override Regex BuildRegEx(string pattern, RegexOptions regexOptions)
-        {
-            return base.BuildRegEx(pattern, RegexOptions.Compiled | RegexOptions.Singleline | regexOptions);
+            _databaseRegex.Recompile(_regexOptions);
+            _queryMatchRegEx.Recompile(_regexOptions);
         }
 
         public string QueryReplacementString { get; set; }
  
         public string DatabaseRegEx
         {
-            get => _databaseRegExPattern;
-            set => SetRegExProperty(value, ref _databaseRegExPattern, ref _databaseRegex, RegExOptions);
+            get => _databaseRegex.Pattern;
+            set => _databaseRegex.Set(value, RegExOptions);
         }
         
         public string QueryMatchRegEx
         {
-            get => _queryMatchRegExPattern;
-            set => SetRegExProperty(value, ref _queryMatchRegExPattern, ref _queryMatchRegEx, RegExOptions);
+            get => _queryMatchRegEx.Pattern;
+            set => _queryMatchRegEx.Set(value, RegExOptions);
         }
 
         public bool MatchDatabase(string database)
         {
-            return _databaseRegex != null && _databaseRegex.IsMatch(database);
+            return _databaseRegex.RegEx != null && _databaseRegex.RegEx.IsMatch(database);
         }
 
         public string ProcessQuery(string query)
         {
-            return _queryMatchRegEx == null ? query : _queryMatchRegEx.Replace(query, QueryReplacementString);
+            return _queryMatchRegEx.RegEx == null ? query : _queryMatchRegEx.RegEx.Replace(query, QueryReplacementString);
         }
     }
 }

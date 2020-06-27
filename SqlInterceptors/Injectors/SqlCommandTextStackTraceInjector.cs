@@ -16,11 +16,12 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
         public static bool HashInjectionEnabled = Settings.Default.HashInjectionEnabled;
         public static bool StackInjectionEnabled = Settings.Default.StackFrameInjectionEnabled;
         public static int CallStackEntriesToReport = Settings.Default.StackEntriesReportedCount;
+
         public static string InjectStackTrace(DbConnection dbConnection, SqlCommand sqlCmd, string sqlCommand, CommandType commandType)
         {
-            if (SqlCommandProcessor.Enabled && (HashInjectionEnabled || StackInjectionEnabled))
-                AddSqlCommandToDictionary(sqlCmd, sqlCommand);
-            if (!SqlCommandProcessor.Enabled || commandType != CommandType.Text || sqlCommand.StartsWith(WasProcessedIndicator))
+            if (SqlCommandInterceptor.Enabled && (HashInjectionEnabled || StackInjectionEnabled))
+                StoreSqlCommandInDictionary(sqlCmd, sqlCommand);
+            if (!SqlCommandInterceptor.Enabled || commandType != CommandType.Text || sqlCommand.StartsWith(WasProcessedIndicator))
                 return sqlCommand;
             try
             {
@@ -65,7 +66,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
             }
         }
 
-        public static void AddSqlCommandToDictionary(SqlCommand cmd, string cmdText)
+        public static void StoreSqlCommandInDictionary(SqlCommand cmd, string cmdText)
         {
             if (!cmdText.StartsWith(WasProcessedIndicator))
                 OriginalSqlCommand.AddOrUpdate(cmd, (v) => cmdText, (k, v) => cmdText);
@@ -77,7 +78,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
             OriginalSqlCommand.TryRemove(cmd, out var cmdText);
         }
 
-        public static bool GetOriginalSqlCommandFromDictionary(SqlCommand cmd, out string sql)
+        public static bool TryGetOriginalSqlCommandFromDictionary(SqlCommand cmd, out string sql)
         {
             return OriginalSqlCommand.TryGetValue(cmd, out sql);
         }

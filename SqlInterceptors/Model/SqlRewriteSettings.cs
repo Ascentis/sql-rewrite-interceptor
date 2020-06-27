@@ -1,41 +1,36 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using Ascentis.Infrastructure.SqlInterceptors.Utils;
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Model
 {
-    public class SqlRewriteSettings : SqlRewriteModelBase
+    public class SqlRewriteSettings
     {
+        private const RegexOptions DefaultRegexOptions = RegexOptions.Compiled | RegexOptions.IgnoreCase;
         public int Id;
-
-        protected override Regex BuildRegEx(string pattern, RegexOptions regexOptions)
-        {
-            return base.BuildRegEx(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | regexOptions);
-        }
-
-        private Regex _machineRegEx;
-        private string _machineRegExPattern;
+        
+        private readonly SqlInjectorRegEx _machineRegEx = new SqlInjectorRegEx(DefaultRegexOptions);
         public string MachineRegEx
         {
-            get => _machineRegExPattern;
-            set => SetRegExProperty(value, ref _machineRegExPattern, ref _machineRegEx);
+            get => _machineRegEx.Pattern;
+            set => _machineRegEx.Set(value);
         }
 
-        private Regex _processNameRegEx;
-        private string _processNameRegExPattern;
+        private readonly SqlInjectorRegEx _processNameRegEx = new SqlInjectorRegEx(DefaultRegexOptions);
         public string ProcessNameRegEx
         {
-            get => _processNameRegExPattern;
-            set => SetRegExProperty(value, ref _processNameRegExPattern, ref _processNameRegEx);
+            get => _processNameRegEx.Pattern;
+            set => _processNameRegEx.Set(value);
         }
 
         public bool MatchProcessName()
         {
-            return _processNameRegEx != null && _processNameRegEx.IsMatch(Environment.CommandLine);
+            return _processNameRegEx.RegEx != null && _processNameRegEx.RegEx.IsMatch(Environment.CommandLine);
         }
 
         public bool MatchMachineName()
         {
-            return _machineRegEx != null && _machineRegEx.IsMatch(Environment.MachineName);
+            return _machineRegEx.RegEx != null && _machineRegEx.RegEx.IsMatch(Environment.MachineName);
         }
 
         public bool Enabled { get; set; }

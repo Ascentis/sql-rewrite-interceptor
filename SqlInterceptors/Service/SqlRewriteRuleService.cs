@@ -80,7 +80,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors
                     RegisterSqlCommandInjectors.Register();
                     _interceptorInited = true;
                 }
-                SqlCommandProcessor.Enabled = _enabled;
+                SqlCommandInterceptor.Enabled = _enabled;
             }
         }
 
