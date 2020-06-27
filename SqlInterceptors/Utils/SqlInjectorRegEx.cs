@@ -1,9 +1,13 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Utils
 {
     public class SqlInjectorRegEx
     {
+        // RegEx stored in cache never expire
+        private static readonly ConcurrentDictionary<RegExCacheKey, Regex> RegExCache = new ConcurrentDictionary<RegExCacheKey, Regex>();
         public Regex RegEx { get; private set; }
         public string Pattern { get; private set; }
         private readonly RegexOptions _defaultOptions;
@@ -18,7 +22,18 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Utils
             if (pattern == Pattern)
                 return;
             Pattern = pattern;
-            RegEx = Pattern != "" ? new Regex(pattern, _defaultOptions | regexOptions) : null;
+            try
+            {
+                RegEx = Pattern != ""
+                    ? RegExCache.GetOrAdd(new RegExCacheKey(pattern, _defaultOptions | regexOptions),
+                        tuple => new Regex(tuple.Pattern, tuple.RegExOptions))
+                    : null;
+            }
+            catch (Exception)
+            {
+                RegEx = null;
+                throw;
+            }
         }
 
         public void Recompile(RegexOptions regexOptions)

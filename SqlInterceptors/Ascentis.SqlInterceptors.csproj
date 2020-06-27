@@ -68,6 +68,7 @@
     <Compile Include="Repository\SqlRewriteRuleDBRepositoryException.cs" />
     <Compile Include="Service\SqlRewriteRuleService.cs" />
     <Compile Include="Service\SqlRewriteRuleServiceException.cs" />
+    <Compile Include="Utils\RegExCacheKey.cs" />
     <Compile Include="Utils\SqlInjectorRegEx.cs" />
   </ItemGroup>
   <ItemGroup>
