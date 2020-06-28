@@ -57,9 +57,9 @@ namespace Ascentis.Infrastructure.DBRepository
                     [StackFrameInjectionEnabled] [bit] NOT NULL,
                     [CallStackEntriesToReport] [int] NOT NULL
                  CONSTRAINT [PK_SqlRewriteInjectorSettings] PRIMARY KEY CLUSTERED 
-                (
-                    [Id] ASC
-                )
+                    (
+                        [Id] ASC
+                    )
                 );
                 ALTER TABLE [dbo].[SqlRewriteInjectorSettings] ADD  CONSTRAINT [DF_SqlRewriteInjectorSettings_Enabled]  DEFAULT ((0)) FOR [Enabled];
                 ALTER TABLE [dbo].[SqlRewriteInjectorSettings] ADD  CONSTRAINT [DF_SqlRewriteInjectorSettings_HashInjectionEnabled]  DEFAULT ((1)) FOR [HashInjectionEnabled];

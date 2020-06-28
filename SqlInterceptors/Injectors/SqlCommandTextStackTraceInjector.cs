@@ -19,12 +19,12 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
 
         public static string InjectStackTrace(DbConnection dbConnection, SqlCommand sqlCmd, string sqlCommand, CommandType commandType)
         {
-            if (SqlCommandInterceptor.Enabled && (HashInjectionEnabled || StackInjectionEnabled))
-                StoreSqlCommandInDictionary(sqlCmd, sqlCommand);
-            if (!SqlCommandInterceptor.Enabled || commandType != CommandType.Text || sqlCommand.StartsWith(WasProcessedIndicator))
-                return sqlCommand;
             try
             {
+                if (SqlCommandInterceptor.Enabled && (HashInjectionEnabled || StackInjectionEnabled))
+                    StoreSqlCommandInDictionary(sqlCmd, sqlCommand);
+                if (!SqlCommandInterceptor.Enabled || commandType != CommandType.Text || sqlCommand.StartsWith(WasProcessedIndicator))
+                    return sqlCommand;
                 var stackTraceText = "";
                 if (StackInjectionEnabled)
                 {

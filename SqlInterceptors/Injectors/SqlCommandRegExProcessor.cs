@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using Ascentis.Infrastructure.SqlInterceptors.Model;
 using Ascentis.Infrastructure.SqlInterceptors.Properties;
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
 {
@@ -26,10 +27,10 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
 
         public static string ProcessSqlForRegExReplacement(DbConnection dbConnection, SqlCommand sqlCmd, string sqlCommand, CommandType commandType)
         {
-            if (!RegExInjectionEnabled || !SqlCommandInterceptor.Enabled || dbConnection == null || sqlCommand.EndsWith(RegReplacementIndicator))
-                return sqlCommand;
             try
             {
+                if (!RegExInjectionEnabled || !SqlCommandInterceptor.Enabled || dbConnection == null || sqlCommand.EndsWith(RegReplacementIndicator))
+                    return sqlCommand;
                 var sql = _sqlRewriteRules.ExecuteReadLocked(sqlRewriteRules =>
                 {
                     foreach (var regEx in sqlRewriteRules)

@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
-namespace Ascentis.Infrastructure.SqlInterceptors.Utils
+namespace Ascentis.Infrastructure.SqlInterceptors.Model.Utils
 {
     public class SqlInjectorRegEx
     {
@@ -26,7 +26,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Utils
             {
                 RegEx = Pattern != ""
                     ? RegExCache.GetOrAdd(new RegExCacheKey(pattern, _defaultOptions | regexOptions),
-                        tuple => new Regex(tuple.Pattern, tuple.RegExOptions))
+                        key => new Regex(key.Pattern, key.RegExOptions))
                     : null;
             }
             catch (Exception)

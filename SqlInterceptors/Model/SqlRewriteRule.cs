@@ -1,5 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using Ascentis.Infrastructure.SqlInterceptors.Utils;
+using Ascentis.Infrastructure.SqlInterceptors.Model.Utils;
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Model
 {

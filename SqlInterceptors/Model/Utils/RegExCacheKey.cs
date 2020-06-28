@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Ascentis.Infrastructure.SqlInterceptors.Utils
+namespace Ascentis.Infrastructure.SqlInterceptors.Model.Utils
 {
     public readonly struct RegExCacheKey
     {
