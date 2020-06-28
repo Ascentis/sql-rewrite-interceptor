@@ -2,6 +2,7 @@
 using HarmonyLib;
 // ReSharper disable UnusedMember.Local
 // ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Global
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
 {

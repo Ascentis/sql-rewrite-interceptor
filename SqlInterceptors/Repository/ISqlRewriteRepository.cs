@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Ascentis.Infrastructure.SqlInterceptors.Model;
+// ReSharper disable UnusedMemberInSuper.Global
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Repository
 {

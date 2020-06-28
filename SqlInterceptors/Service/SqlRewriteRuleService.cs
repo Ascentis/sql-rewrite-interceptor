@@ -116,20 +116,19 @@ namespace Ascentis.Infrastructure.SqlInterceptors
                 if (value && !_repository.IsThreadSafe())
                     throw new SqlRewriteRuleServiceException("Repository must own it's connection (be thread safe) in order to use auto-refresh of Sql rewrite rules and its settings");
                 _autoRefreshRulesAndSettingsEnabled = value;
-                if (_autoRefreshTimer == null)
-                    _autoRefreshTimer = new Timer(context =>
+                _autoRefreshTimer ??= new Timer(context =>
+                {
+                    try
                     {
-                        try
-                        {
-                            ApplySettingsFromRepository();
-                            RefreshRulesFromRepository();
-                        }
-                        catch (Exception e)
-                        {
-                            InvokeSqlCommandInterceptorExceptionDelegate(e);
-                            Enabled = false;
-                        }
-                    });
+                        ApplySettingsFromRepository();
+                        RefreshRulesFromRepository();
+                    }
+                    catch (Exception e)
+                    {
+                        InvokeSqlCommandInterceptorExceptionDelegate(e);
+                        Enabled = false;
+                    }
+                });
                 ResetAutoRefreshTimerInterval();
             }
         }

@@ -4,6 +4,7 @@ using HarmonyLib;
 // ReSharper disable ArrangeTypeMemberModifiers
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable UnusedMember.Global
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
 {
