@@ -240,6 +240,12 @@ namespace Ascentis.Infrastructure.DBRepository
             truncateSqlRewriteInjectorSettings.ExecuteNonQuery();
         }
 
+        public void RemoveAllSqlRewriteRules()
+        {
+            using var truncateSqlRewriteInjectorSettings = new SqlCommand("TRUNCATE TABLE SqlRewriteRegistry", _sqlConnection);
+            truncateSqlRewriteInjectorSettings.ExecuteNonQuery();
+        }
+
         public bool IsThreadSafe()
         {
             return _connectionOwned;
