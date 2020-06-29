@@ -15,9 +15,9 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
     [HarmonyPatch(typeof(SqlCommand))]
     [HarmonyPatch("Dispose")]
 #endif
-    public class SqlCommandDisposeInterceptor
+    public static class SqlCommandDisposeInterceptor
     {
-        private static void Prefix(SqlCommand __instance)
+        private static void Postfix(SqlCommand __instance, bool disposing)
         {
             if (SqlCommandTextStackTraceInjector.HashInjectionEnabled || SqlCommandTextStackTraceInjector.StackInjectionEnabled)
                 SqlCommandTextStackTraceInjector.RemoveSqlCommandFromDictionary(__instance);

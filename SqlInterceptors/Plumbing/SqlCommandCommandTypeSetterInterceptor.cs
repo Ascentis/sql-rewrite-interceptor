@@ -10,7 +10,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
 {
     [HarmonyPatch(typeof(SqlCommand))]
     [HarmonyPatch("CommandType", MethodType.Setter)]
-    public class SqlCommandCommandTypeSetterInterceptor
+    public static class SqlCommandCommandTypeSetterInterceptor
     {
         private static void Postfix(SqlCommand __instance, CommandType value)
         {

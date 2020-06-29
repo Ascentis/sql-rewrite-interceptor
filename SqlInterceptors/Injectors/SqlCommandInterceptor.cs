@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
 {
-    public class SqlCommandInterceptor
+    public static class SqlCommandInterceptor
     {
         public static bool Enabled { get; set; }
         public delegate string SqlCommandProcessorDelegate(DbConnection dbConnection, SqlCommand sqlCmd, string value, CommandType commandType);

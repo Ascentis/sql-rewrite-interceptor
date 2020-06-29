@@ -37,11 +37,15 @@
       <HintPath>..\packages\Lib.Harmony.2.0.1\lib\net45\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Ascentis.Infrastructure, Version=1.2.0.0, Culture=neutral, PublicKeyToken=374afd0f141d13fa, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ascentis.Infrastructure.2.3.0\lib\net40\Ascentis.Infrastructure.dll</HintPath>
+      <HintPath>..\packages\Ascentis.Infrastructure.2.4.2\lib\net40\Ascentis.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Ascentis.SimpleMemoryCache, Version=1.1.0.0, Culture=neutral, PublicKeyToken=1371ebc800287771, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ascentis.Infrastructure.2.4.2\lib\net40\Ascentis.SimpleMemoryCache.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

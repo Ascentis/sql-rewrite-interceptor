@@ -58,5 +58,14 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Properties {
                 return ((int)(this["StackEntriesReportedCount"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string StackFrameIgnorePrefixes {
+            get {
+                return ((string)(this["StackFrameIgnorePrefixes"]));
+            }
+        }
     }
 }

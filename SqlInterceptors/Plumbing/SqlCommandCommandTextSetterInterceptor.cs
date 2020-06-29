@@ -8,11 +8,11 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
 {
     [HarmonyPatch(typeof(SqlCommand))]
     [HarmonyPatch("CommandText", MethodType.Setter)]
-    public class SqlCommandCommandTextSetterInterceptor
+    public static class SqlCommandCommandTextSetterInterceptor
     {
         private static void Prefix(SqlCommand __instance, ref string value)
         {
-            value = SqlCommandSetProcessor.Process(__instance, value, __instance.Connection);
+            value = SqlCommandSetProcessor.Process(__instance.Connection, __instance, value);
         }
     }
 }

@@ -6,9 +6,9 @@ using Ascentis.Infrastructure.SqlInterceptors.Injectors;
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
 {
-    public class SqlCommandSetProcessor
+    public static class SqlCommandSetProcessor
     {
-        public static string Process(SqlCommand __instance, string cmdText, SqlConnection connection)
+        public static string Process(SqlConnection connection, SqlCommand __instance, string cmdText)
         {
             var replacedCmdText = cmdText;
             try

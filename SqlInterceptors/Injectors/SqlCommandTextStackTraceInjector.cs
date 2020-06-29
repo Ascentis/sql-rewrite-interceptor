@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Runtime.Caching;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -11,17 +11,18 @@ using Ascentis.Infrastructure.SqlInterceptors.Properties;
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
 {
-    public class SqlCommandTextStackTraceInjector
+    public static class SqlCommandTextStackTraceInjector
     {
         private const string WasProcessedIndicator = "/*-*/";
-        private static readonly ConcurrentDictionary<SqlCommand, string> OriginalSqlCommand = new ConcurrentDictionary<SqlCommand, string>();
+        private static readonly SimpleMemoryCache OriginalSqlCommand = new SimpleMemoryCache($"{nameof(SqlCommandTextStackTraceInjector)}_OriginalSqlCache");
         public static bool HashInjectionEnabled = Settings.Default.HashInjectionEnabled;
         public static bool StackInjectionEnabled = Settings.Default.StackFrameInjectionEnabled;
         public static int CallStackEntriesToReport = Settings.Default.StackEntriesReportedCount;
         private static readonly ConcurrentObjectAccessor<List<string>> StackFrameIgnorePrefixesList = new ConcurrentObjectAccessor<List<string>>();
+
         public static string StackFrameIgnorePrefixes
         {
-            get => StackFrameIgnorePrefixesList.ExecuteReadLocked( prefixList => string.Join("\r\n", prefixList));
+            get => StackFrameIgnorePrefixesList.ExecuteReadLocked(prefixList => string.Join("\r\n", prefixList));
             set
             {
                 StackFrameIgnorePrefixesList.SwapNewAndExecute(
@@ -33,9 +34,48 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
             }
         }
 
+        static SqlCommandTextStackTraceInjector()
+        {
+            StackFrameIgnorePrefixes = Settings.Default.StackFrameIgnorePrefixes;
+        }
+
         public static bool MatchStackFrameEntry(string entry)
         {
             return StackFrameIgnorePrefixesList.ExecuteReadLocked( prefixList => prefixList.Any(entry.StartsWith));
+        }
+
+        private static string GetStackTrace()
+        {
+            if (!StackInjectionEnabled) 
+                return "";
+            var stackTrace = new StackTrace();
+            var stackFrames = stackTrace.GetFrames();
+            if (stackFrames == null)
+                return "";
+            var callStack = "";
+            var stackEntries = CallStackEntriesToReport;
+            foreach (var stackFrame in stackFrames)
+            {
+                var memberInfo = stackFrame.GetMethod().DeclaringType;
+                if (memberInfo == null || memberInfo.Assembly == Assembly.GetExecutingAssembly() || memberInfo.Assembly.FullName.Contains("mscorlib"))
+                    continue;
+                var stackEntry = $"[{memberInfo.Assembly.GetName().Name}].{memberInfo.FullName}.{stackFrame.GetMethod().Name}";
+                if (MatchStackFrameEntry(stackEntry))
+                    continue;
+                callStack += $"{stackEntry}\r\n";
+                if (stackEntries-- <= 0)
+                    break;
+            }
+
+            return callStack == "" ? "" : $"\r\n/* Top {CallStackEntriesToReport} call stack entries:\r\n{callStack} */";
+        }
+
+        private static string GetSqlCommandHash(string sqlCommand)
+        {
+            if (!HashInjectionEnabled) 
+                return "";
+            var hash = (uint) sqlCommand.GetHashCode();
+            return $"/*AHSH={hash}*/ ";
         }
 
         public static string InjectStackTrace(DbConnection dbConnection, SqlCommand sqlCmd, string sqlCommand, CommandType commandType)
@@ -46,41 +86,8 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
                     StoreSqlCommandInDictionary(sqlCmd, sqlCommand);
                 if (!SqlCommandInterceptor.Enabled || commandType != CommandType.Text || sqlCommand.StartsWith(WasProcessedIndicator))
                     return sqlCommand;
-                var stackTraceText = "";
-                if (StackInjectionEnabled)
-                {
-                    var callStack = "";
-                    var stackTrace = new StackTrace();
-                    var stackFrames = stackTrace.GetFrames();
-                    if (stackFrames != null)
-                    {
-                        var stackEntries = CallStackEntriesToReport;
-                        foreach (var stackFrame in stackFrames)
-                        {
-                            var memberInfo = stackFrame.GetMethod().DeclaringType;
-                            if (memberInfo == null || memberInfo.Assembly == Assembly.GetExecutingAssembly() || memberInfo.Assembly.FullName.Contains("mscorlib"))
-                                continue;
-                            var stackEntry = $"[{memberInfo.Assembly.GetName().Name}].{memberInfo.FullName}.{stackFrame.GetMethod().Name}";
-                            if (MatchStackFrameEntry(stackEntry))
-                                continue;
-                            callStack += $"{stackEntry}\r\n";
-                            if(stackEntries-- <= 0)
-                                break;
-                        }
-                    }
-
-                    if (callStack != "")
-                        stackTraceText = $"\r\n/* Top {CallStackEntriesToReport} call stack entries:\r\n{callStack} */";
-                }
-
-                var hashText = "";
-                // ReSharper disable once InvertIf
-                if (HashInjectionEnabled)
-                {
-                    var hash = (uint) sqlCommand.GetHashCode();
-                    hashText = $"/*AHSH={hash}*/ ";
-                }
-
+                var stackTraceText = GetStackTrace();
+                var hashText = GetSqlCommandHash(sqlCommand);
                 return $"{WasProcessedIndicator}{hashText}{sqlCommand}{stackTraceText}";
             }
             catch (Exception e)
@@ -94,18 +101,19 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
         public static void StoreSqlCommandInDictionary(SqlCommand cmd, string cmdText)
         {
             if (!cmdText.StartsWith(WasProcessedIndicator))
-                OriginalSqlCommand.AddOrUpdate(cmd, (v) => cmdText, (k, v) => cmdText);
+                OriginalSqlCommand.Set(cmd.GetHashCode().ToString(), v => cmdText, new CacheItemPolicy() { SlidingExpiration = new TimeSpan(0, 0, 1, 0) });
         }
 
         public static void RemoveSqlCommandFromDictionary(SqlCommand cmd)
         {
-            // ReSharper disable once UnusedVariable
-            OriginalSqlCommand.TryRemove(cmd, out var cmdText);
+            OriginalSqlCommand.Remove(cmd.GetHashCode().ToString());
         }
 
         public static bool TryGetOriginalSqlCommandFromDictionary(SqlCommand cmd, out string sql)
         {
-            return OriginalSqlCommand.TryGetValue(cmd, out sql);
+            var found = OriginalSqlCommand.Get(cmd.GetHashCode().ToString(), out var oSql);
+            sql = oSql != null ? (string) oSql : "";
+            return found;
         }
     }
 }

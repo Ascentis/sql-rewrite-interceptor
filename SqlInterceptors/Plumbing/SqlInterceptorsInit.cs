@@ -2,7 +2,7 @@
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
 {
-    public class SqlInterceptorsInit
+    public static class SqlInterceptorsInit
     {
         private static Harmony _harmony;
 

@@ -9,7 +9,7 @@ using Ascentis.Infrastructure.SqlInterceptors.Properties;
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
 {
-    public class SqlCommandRegExProcessor
+    public static class SqlCommandRegExProcessor
     {
         public const string RegReplacementIndicator = "/*x*/";
         public static bool RegExInjectionEnabled = Settings.Default.RegExInjectionEnabled;
