@@ -21,7 +21,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
             }
             catch (Exception e)
             {
-                SqlCommandInterceptor.ExceptionDelegateEvent?.Invoke(e);
+                SqlCommandInterceptor.OnExceptionDelegateEvent(e);
                 return cmdText;
             }
         }
