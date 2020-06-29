@@ -11,6 +11,11 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
         public delegate string SqlCommandProcessorDelegate(DbConnection dbConnection, SqlCommand sqlCmd, string value, CommandType commandType);
         public delegate void ExceptionDelegate(Exception e);
         public static SqlCommandProcessorDelegate SqlCommandProcessorEvent { get; set; }
-        public static ExceptionDelegate ExceptionDelegateEvent { get; set; }
+        public static event ExceptionDelegate ExceptionDelegateEvent;
+
+        public static void OnExceptionDelegateEvent(Exception e)
+        {
+            ExceptionDelegateEvent?.Invoke(e);
+        }
     }
 }
