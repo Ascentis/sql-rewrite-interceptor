@@ -127,7 +127,6 @@ namespace Ascentis.Infrastructure.SqlInterceptors
                     catch (Exception e)
                     {
                         InvokeSqlCommandInterceptorExceptionDelegate(e);
-                        Enabled = false;
                     }
                 });
                 ResetAutoRefreshTimerInterval();

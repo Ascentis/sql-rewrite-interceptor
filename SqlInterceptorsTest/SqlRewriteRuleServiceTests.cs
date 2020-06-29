@@ -101,11 +101,14 @@ namespace SqlInterceptorsTest
             conn.Open();
             using var cmd = new SqlCommand("DROP TABLE SqlRewriteRegistry", conn);
             cmd.ExecuteNonQuery();
+            var exceptionThrown = false;
+            service.ExceptionDelegateEvent += e => exceptionThrown = true;
             service.AutoRefreshTimerInterval = 500;
             service.AutoRefreshRulesAndSettingsEnabled = true;
             Thread.Sleep(1000);
             Assert.IsNotNull(throwException);
-            Assert.IsFalse(service.Enabled);
+            Assert.IsTrue(service.Enabled);
+            Assert.IsTrue(exceptionThrown);
         }
 
         [TestMethod]
@@ -120,11 +123,14 @@ namespace SqlInterceptorsTest
             conn.Open();
             using var cmd = new SqlCommand($"INSERT INTO SqlRewriteRegistry (DatabaseRegEx, QueryMatchRegEx, QueryReplacementString) VALUES ('.*)', '{Stm}', 'hello')", conn);
             cmd.ExecuteNonQuery();
+            var exceptionThrown = false;
+            service.ExceptionDelegateEvent += e => exceptionThrown = true;
             service.AutoRefreshTimerInterval = 500;
             service.AutoRefreshRulesAndSettingsEnabled = true;
             Thread.Sleep(1000);
             Assert.IsNotNull(throwException);
-            Assert.IsFalse(service.Enabled);
+            Assert.IsTrue(service.Enabled);
+            Assert.IsTrue(exceptionThrown);
         }
 
         [TestMethod]
