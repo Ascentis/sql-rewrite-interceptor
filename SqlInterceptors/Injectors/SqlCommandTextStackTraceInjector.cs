@@ -92,7 +92,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
             }
             catch (Exception e)
             {
-                SqlCommandInterceptor.ExceptionDelegateEvent?.Invoke(e);
+                SqlCommandInterceptor.OnExceptionDelegateEvent(e);
                 return sqlCommand;
             }
         }
