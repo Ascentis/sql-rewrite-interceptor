@@ -117,6 +117,7 @@ namespace SqlInterceptorsTest
                 Assert.AreEqual(item.RegExInjectionEnabled, loadedItem.RegExInjectionEnabled);
                 Assert.AreEqual(item.StackFrameInjectionEnabled, loadedItem.StackFrameInjectionEnabled);
                 Assert.AreEqual(item.CallStackEntriesToReport, loadedItem.CallStackEntriesToReport);
+                Assert.AreEqual(item.StackFrameIgnorePrefixes, loadedItem.StackFrameIgnorePrefixes);
                 return;
             }
             throw new Exception("Settings entry doesn't exist");
@@ -130,7 +131,8 @@ namespace SqlInterceptorsTest
             {
                 Id = 0, // This will cause insertion
                 ProcessNameRegEx = ".*",
-                MachineRegEx = ".*"
+                MachineRegEx = ".*",
+                StackFrameIgnorePrefixes = "[mscorlib].\r\nSqlInterceptorsTests."
             };
             repository.SaveSqlRewriteSettings(settings);
             try

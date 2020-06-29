@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Ascentis.Infrastructure.SqlInterceptors.Model.Utils;
 
@@ -38,5 +40,6 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Model
         public bool RegExInjectionEnabled { get; set; }
         public bool StackFrameInjectionEnabled { get; set; }
         public int CallStackEntriesToReport { get; set; }
+        public string StackFrameIgnorePrefixes { get; set; } = "";
     }
 }

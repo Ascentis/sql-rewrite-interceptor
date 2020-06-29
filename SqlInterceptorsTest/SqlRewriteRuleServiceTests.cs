@@ -21,6 +21,12 @@ namespace SqlInterceptorsTest
             TestUtils.InitTests();
         }
 
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            SqlCommandTextStackTraceInjector.StackFrameIgnorePrefixes = "";
+        }
+
         [TestMethod]
         public void TestCreateSqlRewriteRuleService()
         {
@@ -134,7 +140,8 @@ namespace SqlInterceptorsTest
                 Enabled = true,
                 HashInjectionEnabled = false,
                 RegExInjectionEnabled = false,
-                StackFrameInjectionEnabled = false
+                StackFrameInjectionEnabled = false,
+                StackFrameIgnorePrefixes = "Microsoft.VisualStudio.TestTools.UnitTesting"
             };
             repo.SaveSqlRewriteSettings(settings);
             using var service = new SqlRewriteRuleService(repo);
@@ -142,23 +149,27 @@ namespace SqlInterceptorsTest
             Assert.IsTrue(SqlCommandRegExProcessor.RegExInjectionEnabled);
             Assert.IsTrue(SqlCommandTextStackTraceInjector.HashInjectionEnabled);
             Assert.IsTrue(SqlCommandTextStackTraceInjector.StackInjectionEnabled);
+            Assert.AreEqual("", SqlCommandTextStackTraceInjector.StackFrameIgnorePrefixes);
             service.Enabled = true;
             service.ApplySettingsFromRepository();
             Assert.IsTrue(service.Enabled);
             Assert.IsFalse(SqlCommandRegExProcessor.RegExInjectionEnabled);
             Assert.IsFalse(SqlCommandTextStackTraceInjector.HashInjectionEnabled);
             Assert.IsFalse(SqlCommandTextStackTraceInjector.StackInjectionEnabled);
+            Assert.AreEqual("Microsoft.VisualStudio.TestTools.UnitTesting", SqlCommandTextStackTraceInjector.StackFrameIgnorePrefixes);
             repo.RemoveSqlRewriteSettings(settings.Id);
             settings.Enabled = false;
             settings.HashInjectionEnabled = true;
             settings.RegExInjectionEnabled = true;
             settings.StackFrameInjectionEnabled = true;
+            settings.StackFrameIgnorePrefixes = "";
             repo.SaveSqlRewriteSettings(settings);
             service.ApplySettingsFromRepository();
             Assert.IsFalse(service.Enabled);
             Assert.IsTrue(SqlCommandRegExProcessor.RegExInjectionEnabled);
             Assert.IsTrue(SqlCommandTextStackTraceInjector.HashInjectionEnabled);
             Assert.IsTrue(SqlCommandTextStackTraceInjector.StackInjectionEnabled);
+            Assert.AreEqual("", SqlCommandTextStackTraceInjector.StackFrameIgnorePrefixes);
             service.RemoveSettings(settings.Id);
             var id = service.StoreCurrentSettings(settings.MachineRegEx, settings.ProcessNameRegEx);
             Assert.AreNotEqual(settings.Id, id);
@@ -167,6 +178,7 @@ namespace SqlInterceptorsTest
             Assert.IsTrue(SqlCommandRegExProcessor.RegExInjectionEnabled);
             Assert.IsTrue(SqlCommandTextStackTraceInjector.HashInjectionEnabled);
             Assert.IsTrue(SqlCommandTextStackTraceInjector.StackInjectionEnabled);
+            Assert.AreEqual("", SqlCommandTextStackTraceInjector.StackFrameIgnorePrefixes);
             service.RemoveSettings(id);
             // ReSharper disable once AccessToDisposedClosure
             Assert.ThrowsException<SqlRewriteRuleDbRepositoryException>(() => { service.RemoveSettings(id); });

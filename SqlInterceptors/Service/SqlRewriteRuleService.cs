@@ -55,6 +55,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors
                 SqlCommandRegExProcessor.RegExInjectionEnabled = settings.RegExInjectionEnabled;
                 SqlCommandTextStackTraceInjector.HashInjectionEnabled = settings.HashInjectionEnabled;
                 SqlCommandTextStackTraceInjector.StackInjectionEnabled = settings.StackFrameInjectionEnabled;
+                SqlCommandTextStackTraceInjector.StackFrameIgnorePrefixes = settings.StackFrameIgnorePrefixes;
                 break;
             }
         }
@@ -166,7 +167,8 @@ namespace Ascentis.Infrastructure.SqlInterceptors
                 Enabled = Enabled,
                 HashInjectionEnabled = SqlCommandTextStackTraceInjector.HashInjectionEnabled,
                 StackFrameInjectionEnabled = SqlCommandTextStackTraceInjector.StackInjectionEnabled,
-                RegExInjectionEnabled = SqlCommandRegExProcessor.RegExInjectionEnabled
+                RegExInjectionEnabled = SqlCommandRegExProcessor.RegExInjectionEnabled,
+                StackFrameIgnorePrefixes = SqlCommandTextStackTraceInjector.StackFrameIgnorePrefixes
             };
             lock (this)
             {

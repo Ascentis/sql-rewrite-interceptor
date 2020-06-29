@@ -55,7 +55,8 @@ namespace Ascentis.Infrastructure.DBRepository
                     [HashInjectionEnabled] [bit] NOT NULL,
                     [RegExInjectionEnabled] [bit] NOT NULL,
                     [StackFrameInjectionEnabled] [bit] NOT NULL,
-                    [CallStackEntriesToReport] [int] NOT NULL
+                    [CallStackEntriesToReport] [int] NOT NULL,
+                    [StackFrameIgnorePrefixes] [varchar](max) NULL,
                  CONSTRAINT [PK_SqlRewriteInjectorSettings] PRIMARY KEY CLUSTERED 
                     (
                         [Id] ASC
@@ -147,8 +148,8 @@ namespace Ascentis.Infrastructure.DBRepository
             using var saveSqlRewriteSettings = new SqlCommand(@"
                 MERGE SqlRewriteInjectorSettings AS t
                 USING (
-                    SELECT @ID, @MachineRegEx, @ProcessNameRegEx, @Enabled, @HashInjectionEnabled, @RegExInjectionEnabled, @StackFrameInjectionEnabled, @CallStackEntriesToReport
-                ) AS src (ID, MachineRegEx, ProcessNameRegEx, Enabled, HashInjectionEnabled, RegExInjectionEnabled, StackFrameInjectionEnabled, CallStackEntriesToReport)
+                    SELECT @ID, @MachineRegEx, @ProcessNameRegEx, @Enabled, @HashInjectionEnabled, @RegExInjectionEnabled, @StackFrameInjectionEnabled, @CallStackEntriesToReport, @StackFrameIgnorePrefixes
+                ) AS src (ID, MachineRegEx, ProcessNameRegEx, Enabled, HashInjectionEnabled, RegExInjectionEnabled, StackFrameInjectionEnabled, CallStackEntriesToReport, StackFrameIgnorePrefixes)
                 ON (t.ID = src.ID)
                 WHEN MATCHED THEN
                     UPDATE SET 
@@ -158,10 +159,25 @@ namespace Ascentis.Infrastructure.DBRepository
                         t.HashInjectionEnabled = src.HashInjectionEnabled,
                         t.RegExInjectionEnabled = src.RegExInjectionEnabled,
                         t.StackFrameInjectionEnabled = src.StackFrameInjectionEnabled,
-                        t.CallStackEntriesToReport = src.CallStackEntriesToReport
+                        t.CallStackEntriesToReport = src.CallStackEntriesToReport,
+                        t.StackFrameIgnorePrefixes = src.StackFrameIgnorePrefixes
                 WHEN NOT MATCHED THEN
-                    INSERT (MachineRegEx, ProcessNameRegEx, Enabled, HashInjectionEnabled, RegExInjectionEnabled, StackFrameInjectionEnabled, CallStackEntriesToReport)
-                    VALUES (src.MachineRegEx, src.ProcessNameRegEx, src.Enabled, src.HashInjectionEnabled, src.RegExInjectionEnabled, src.StackFrameInjectionEnabled, src.CallStackEntriesToReport)
+                    INSERT (MachineRegEx,
+                        ProcessNameRegEx,
+                        Enabled,
+                        HashInjectionEnabled,
+                        RegExInjectionEnabled,
+                        StackFrameInjectionEnabled,
+                        CallStackEntriesToReport,
+                        StackFrameIgnorePrefixes)
+                    VALUES (src.MachineRegEx,
+                        src.ProcessNameRegEx,
+                        src.Enabled,
+                        src.HashInjectionEnabled,
+                        src.RegExInjectionEnabled,
+                        src.StackFrameInjectionEnabled,
+                        src.CallStackEntriesToReport,
+                        src.StackFrameIgnorePrefixes)
                 OUTPUT Inserted.ID;", _sqlConnection);
             saveSqlRewriteSettings.Parameters.AddRange(new[]
             {
@@ -172,7 +188,8 @@ namespace Ascentis.Infrastructure.DBRepository
                 new SqlParameter("@HashInjectionEnabled", settings.HashInjectionEnabled ? 1 : 0),
                 new SqlParameter("@StackFrameInjectionEnabled", settings.StackFrameInjectionEnabled ? 1 : 0),
                 new SqlParameter("@RegExInjectionEnabled", settings.RegExInjectionEnabled ? 1 : 0),
-                new SqlParameter("@CallStackEntriesToReport", settings.CallStackEntriesToReport), 
+                new SqlParameter("@CallStackEntriesToReport", settings.CallStackEntriesToReport),
+                new SqlParameter("@StackFrameIgnorePrefixes", settings.StackFrameIgnorePrefixes), 
             });
             var result = saveSqlRewriteSettings.ExecuteScalar();
             if (result is DBNull)
@@ -184,7 +201,7 @@ namespace Ascentis.Infrastructure.DBRepository
         {
             var result = new List<SqlRewriteSettings>();
             using var loadSqlRewriteSettings = new SqlCommand(@"
-                SELECT ID, MachineRegEx, ProcessNameRegEx, Enabled, HashInjectionEnabled, RegExInjectionEnabled, StackFrameInjectionEnabled, CallStackEntriesToReport
+                SELECT ID, MachineRegEx, ProcessNameRegEx, Enabled, HashInjectionEnabled, RegExInjectionEnabled, StackFrameInjectionEnabled, CallStackEntriesToReport, StackFrameIgnorePrefixes
                 FROM SqlRewriteInjectorSettings", _sqlConnection);
             using var resultSet = loadSqlRewriteSettings.ExecuteReader();
             while (resultSet.Read())
@@ -198,7 +215,8 @@ namespace Ascentis.Infrastructure.DBRepository
                     HashInjectionEnabled = (bool)resultSet[4],
                     RegExInjectionEnabled = (bool)resultSet[5],
                     StackFrameInjectionEnabled = (bool)resultSet[6],
-                    CallStackEntriesToReport = (int)resultSet[7]
+                    CallStackEntriesToReport = (int)resultSet[7],
+                    StackFrameIgnorePrefixes = (string)resultSet[8]
                 };
                 result.Add(item);
             }

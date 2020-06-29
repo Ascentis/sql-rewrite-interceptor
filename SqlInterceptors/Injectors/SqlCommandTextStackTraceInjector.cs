@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using Ascentis.Infrastructure.SqlInterceptors.Properties;
 
@@ -16,6 +18,25 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
         public static bool HashInjectionEnabled = Settings.Default.HashInjectionEnabled;
         public static bool StackInjectionEnabled = Settings.Default.StackFrameInjectionEnabled;
         public static int CallStackEntriesToReport = Settings.Default.StackEntriesReportedCount;
+        private static readonly ConcurrentObjectAccessor<List<string>> StackFrameIgnorePrefixesList = new ConcurrentObjectAccessor<List<string>>();
+        public static string StackFrameIgnorePrefixes
+        {
+            get => StackFrameIgnorePrefixesList.ExecuteReadLocked( prefixList => string.Join("\r\n", prefixList));
+            set
+            {
+                StackFrameIgnorePrefixesList.SwapNewAndExecute(
+                    newPrefixList =>
+                    {
+                        var entries = value.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
+                        newPrefixList.AddRange(entries.Select(entry => entry.Trim()));
+                    }, oldPrefixList => { });
+            }
+        }
+
+        public static bool MatchStackFrameEntry(string entry)
+        {
+            return StackFrameIgnorePrefixesList.ExecuteReadLocked( prefixList => prefixList.Any(entry.StartsWith));
+        }
 
         public static string InjectStackTrace(DbConnection dbConnection, SqlCommand sqlCmd, string sqlCommand, CommandType commandType)
         {
@@ -39,7 +60,10 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
                             var memberInfo = stackFrame.GetMethod().DeclaringType;
                             if (memberInfo == null || memberInfo.Assembly == Assembly.GetExecutingAssembly() || memberInfo.Assembly.FullName.Contains("mscorlib"))
                                 continue;
-                            callStack += $"{memberInfo.FullName}.{stackFrame.GetMethod().Name}\r\n";
+                            var stackEntry = $"[{memberInfo.Assembly.GetName().Name}].{memberInfo.FullName}.{stackFrame.GetMethod().Name}";
+                            if (MatchStackFrameEntry(stackEntry))
+                                continue;
+                            callStack += $"{stackEntry}\r\n";
                             if(stackEntries-- <= 0)
                                 break;
                         }
@@ -50,6 +74,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
                 }
 
                 var hashText = "";
+                // ReSharper disable once InvertIf
                 if (HashInjectionEnabled)
                 {
                     var hash = (uint) sqlCommand.GetHashCode();

@@ -23,6 +23,7 @@ namespace SqlInterceptorsTest
         public void TestCleanup()
         {
             SqlCommandInterceptor.Enabled = false;
+            SqlCommandTextStackTraceInjector.StackFrameIgnorePrefixes = "";
         }
 
         [TestMethod]
@@ -110,6 +111,25 @@ namespace SqlInterceptorsTest
             using var cmd = new SqlCommand(Stm, con);
             var version = cmd.ExecuteScalar().ToString();
             Assert.IsTrue(version.Contains("Microsoft"));
+        }
+
+        [TestMethod]
+        public void TestSqlStackFrameInjection()
+        {
+            SqlCommandInterceptor.Enabled = true;
+            using var con = new SqlConnection(Settings.Default.ConnectionString);
+            con.Open();
+            SqlCommandTextStackTraceInjector.StackFrameIgnorePrefixes = @"  [Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices].
+  [Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter].  
+
+
+  [Microsoft.VisualStudio.TestPlatform.TestFramework].  ";
+            using var cmd = new SqlCommand(Stm, con);
+            // ReSharper disable once UnusedVariable
+            var version = cmd.ExecuteScalar().ToString();
+            Assert.IsFalse(cmd.CommandText.Contains("[Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter].Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute.Execute"));
+            Assert.IsTrue(cmd.CommandText.Contains("[SqlInterceptorsTest].SqlInterceptorsTest.SqlInterceptorsTests."));
+            Assert.IsFalse(cmd.CommandText.Contains("[Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter].Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter"));
         }
     }
 }

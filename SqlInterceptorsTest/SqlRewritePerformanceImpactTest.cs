@@ -19,7 +19,7 @@ namespace SqlInterceptorsTest
             TestUtils.InitTests();
         }
         
-        //[TestMethod]
+        [TestMethod]
         public void TestPerformanceImpact()
         {
             using var repo = new SqlRewriteDbRepository(Settings.Default.ConnectionString);
