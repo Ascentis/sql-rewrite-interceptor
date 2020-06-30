@@ -30,7 +30,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
                     {
                         var entries = value.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries);
                         newPrefixList.AddRange(entries.Select(entry => entry.Trim()));
-                    }, oldPrefixList => { });
+                    });
             }
         }
 

@@ -21,7 +21,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
         {
             set
             {
-                _sqlRewriteRules.SwapNewAndExecute(newObj => { newObj.AddRange(value); }, oldObj => { });
+                _sqlRewriteRules.SwapNewAndExecute(newObj => { newObj.AddRange(value); });
             }
         }
 
