@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Text.RegularExpressions;
 using Ascentis.Infrastructure.DBRepository;
 using Ascentis.Infrastructure.SqlInterceptors.Model;
+using Ascentis.Infrastructure.SqlInterceptors.Model.Utils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SqlInterceptorsTest.Properties;
 
@@ -155,6 +157,20 @@ namespace SqlInterceptorsTest
                     // Ignore exception
                 }
             }
+        }
+
+        [TestMethod]
+        public void TestRegExCacheKeyEquality()
+        {
+            var regExCacheKey = new RegExCacheKey("A key", RegexOptions.Singleline);
+            var regExCacheKey2 = new RegExCacheKey("A key", RegexOptions.Singleline);
+            Assert.AreEqual(regExCacheKey2, regExCacheKey);
+            regExCacheKey = new RegExCacheKey("A key", RegexOptions.Singleline);
+            regExCacheKey2 = new RegExCacheKey("Another key", RegexOptions.Singleline);
+            Assert.AreNotEqual(regExCacheKey2, regExCacheKey);
+            regExCacheKey = new RegExCacheKey("A key", RegexOptions.Multiline);
+            regExCacheKey2 = new RegExCacheKey("A key", RegexOptions.Singleline);
+            Assert.AreNotEqual(regExCacheKey2, regExCacheKey);
         }
     }
 }
