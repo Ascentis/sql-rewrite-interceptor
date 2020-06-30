@@ -5,7 +5,6 @@ using Ascentis.Infrastructure.SqlInterceptors;
 using Ascentis.Infrastructure.SqlInterceptors.Model;
 using Ascentis.Infrastructure.SqlInterceptors.Repository;
 using SqlInterceptorsBasicUsage.Properties;
-// ReSharper disable FunctionNeverReturns
 
 namespace SqlInterceptorsBasicUsage
 {
@@ -17,8 +16,8 @@ namespace SqlInterceptorsBasicUsage
 
             using var repo = new SqlRewriteDbRepository(Settings.Default.ConnectionString);
             repo.RemoveAllSqlRewriteRules();
-
             var lastRefreshFromRepo = DateTime.Now;
+
             using var svc = new SqlRewriteRuleService(repo, true) { AutoRefreshRulesAndSettingsEnabled = true };
             svc.AutoRefreshDelegateEvent += () => lastRefreshFromRepo = DateTime.Now;
 
@@ -50,26 +49,16 @@ namespace SqlInterceptorsBasicUsage
                 Console.WriteLine($"Query:\r\n{cmd.CommandText}\r\n");
                 Console.WriteLine($"Result:\r\n{cmd.ExecuteScalar()}\r\n");
                 Console.WriteLine("Press Enter to continue, enter a replacement SQL and press Enter or press Ctrl-C to finish execution");
-                ConsoleKeyInfo keyPressed;
                 input = "";
                 do
                 {
-                    keyPressed = Console.ReadKey();
-                    switch (keyPressed.Key)
-                    {
-                        case ConsoleKey.C:
-                            if (keyPressed.Modifiers == ConsoleModifiers.Control)
-                                return;
-                            else
-                                input += keyPressed.KeyChar;
-                            break;
-                        case ConsoleKey.Enter: 
-                            break;
-                        default : 
-                            input += keyPressed.KeyChar;
-                            break;
-                    }
-                } while (keyPressed.Key != ConsoleKey.Enter);
+                    var keyPressed = Console.ReadKey();
+                    if (keyPressed.Key == ConsoleKey.C && keyPressed.Modifiers == ConsoleModifiers.Control)
+                        return;
+                    if (keyPressed.Key == ConsoleKey.Enter)
+                        break;
+                    input += keyPressed.KeyChar;
+                } while (true);
                 Console.WriteLine();
             } while (true);
         }
