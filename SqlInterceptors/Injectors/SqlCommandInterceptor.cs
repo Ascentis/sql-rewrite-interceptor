@@ -26,6 +26,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
             try
             {
                 var replacedCmdText = cmdText;
+                // ReSharper disable once LoopCanBeConvertedToQuery
                 foreach (var chainedSqlCommandDelegate in SqlCommandProcessorEvent.GetInvocationList())
                     replacedCmdText = ((SqlCommandProcessorDelegate) chainedSqlCommandDelegate)(connection, sqlCommand, replacedCmdText, sqlCommand.CommandType);
                 return replacedCmdText;

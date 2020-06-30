@@ -39,7 +39,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
             StackFrameIgnorePrefixes = Settings.Default.StackFrameIgnorePrefixes;
         }
 
-        public static bool MatchStackFrameEntry(string entry)
+        private static bool MatchStackFrameEntry(string entry)
         {
             return StackFrameIgnorePrefixesList.ExecuteReadLocked( prefixList => prefixList.Any(entry.StartsWith));
         }
@@ -97,7 +97,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
             }
         }
 
-        public static void StoreSqlCommandInDictionary(SqlCommand cmd, string cmdText)
+        private static void StoreSqlCommandInDictionary(SqlCommand cmd, string cmdText)
         {
             if (!cmdText.StartsWith(WasProcessedIndicator))
                 OriginalSqlCommand.Set(cmd.GetHashCode().ToString(), v => cmdText, new CacheItemPolicy() { SlidingExpiration = new TimeSpan(0, 0, 1, 0) });

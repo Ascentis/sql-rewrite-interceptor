@@ -2,7 +2,7 @@
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Plumbing
 {
-    public class RegisterSqlCommandInjectors
+    public static class RegisterSqlCommandInjectors
     {
         public static void Register()
         {
