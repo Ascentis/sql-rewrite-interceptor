@@ -8,7 +8,7 @@ using SqlInterceptorsBasicUsage.Properties;
 
 namespace SqlInterceptorsBasicUsage
 {
-    internal class Program
+    internal static class Program
     {
         private static void Main()
         {
@@ -19,7 +19,7 @@ namespace SqlInterceptorsBasicUsage
             var lastRefreshFromRepo = DateTime.Now;
 
             using var svc = new SqlRewriteRuleService(repo, true) { AutoRefreshRulesAndSettingsEnabled = true };
-            svc.AutoRefreshDelegateEvent += () => lastRefreshFromRepo = DateTime.Now;
+            svc.AutoRefreshEvent += () => lastRefreshFromRepo = DateTime.Now;
 
             using var conn = new SqlConnection(Settings.Default.ConnectionString);
             conn.Open();

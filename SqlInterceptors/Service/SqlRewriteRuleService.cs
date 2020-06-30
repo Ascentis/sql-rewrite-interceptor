@@ -16,8 +16,8 @@ namespace Ascentis.Infrastructure.SqlInterceptors
 
         public delegate void ExceptionDelegate(Exception e);
         public delegate void AutoRefreshDelegate();
-        public event ExceptionDelegate ExceptionDelegateEvent;
-        public event AutoRefreshDelegate AutoRefreshDelegateEvent;
+        public event ExceptionDelegate ExceptionEvent;
+        public event AutoRefreshDelegate AutoRefreshEvent;
 
         public SqlRewriteRuleService(ISqlRewriteRepository repository, bool enabled = false)
         {
@@ -28,7 +28,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors
 
         private void InvokeSqlCommandInterceptorExceptionDelegate(Exception e)
         {
-            ExceptionDelegateEvent?.Invoke(e);
+            ExceptionEvent?.Invoke(e);
         }
 
         public void RefreshRulesFromRepository()
@@ -126,7 +126,7 @@ namespace Ascentis.Infrastructure.SqlInterceptors
                     {
                         ApplySettingsFromRepository();
                         RefreshRulesFromRepository();
-                        AutoRefreshDelegateEvent?.Invoke();
+                        AutoRefreshEvent?.Invoke();
                     }
                     catch (Exception e)
                     {
