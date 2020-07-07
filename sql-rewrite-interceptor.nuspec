@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Ascentis.SQLRewriteInterceptor</id>
-    <version>1.3.8.2</version>
+    <version>1.3.9.1</version>
     <authors>Jose Sebastian Battig</authors>
     <owners>Ascentis</owners>
     <license type="expression">MIT</license>
@@ -10,12 +10,13 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Utility class to use with ADO.NET that allows pre-processing any SQL used vua SqlCommand class in order to allow optimization/hinting in production environments without recompiling code</description>
     <releaseNotes>
+      Added compatibility with ILMerge when processing stack trace
     </releaseNotes>
     <copyright>Copyright 2020, Ascentis Corporation</copyright>
     <tags>ado.net sql-rewrite hinting optimization performance sql</tags>
     <dependencies>
       <dependency id="Lib.Harmony" version="2.0.1" />
-      <dependency id="Ascentis.Infrastructure" version="2.4.2" />
+      <dependency id="Ascentis.Infrastructure" version="2.4.4" />
     </dependencies>
     <contentFiles>
     </contentFiles>

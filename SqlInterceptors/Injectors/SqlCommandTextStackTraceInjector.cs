@@ -6,7 +6,6 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using Ascentis.Infrastructure.SqlInterceptors.Properties;
 
 namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
@@ -57,9 +56,12 @@ namespace Ascentis.Infrastructure.SqlInterceptors.Injectors
             foreach (var stackFrame in stackFrames)
             {
                 var memberInfo = stackFrame.GetMethod().DeclaringType;
-                if (memberInfo == null || memberInfo.Assembly == Assembly.GetExecutingAssembly() || memberInfo.Assembly.FullName.Contains("mscorlib"))
+                if (memberInfo == null || memberInfo.FullName == null)
                     continue;
-                var stackEntry = $"[{memberInfo.Assembly.GetName().Name}].{memberInfo.FullName}.{stackFrame.GetMethod().Name}";
+                var assemblyName = memberInfo.Assembly.GetName().Name;
+                if (memberInfo.FullName.StartsWith("Ascentis.Infrastructure.SqlInterceptors") || assemblyName.StartsWith("mscorlib"))
+                    continue;
+                var stackEntry = $"[{assemblyName}].{memberInfo.FullName}.{stackFrame.GetMethod().Name}";
                 if (MatchStackFrameEntry(stackEntry))
                     continue;
                 callStack += $"{stackEntry}\r\n";
